@@ -10,10 +10,10 @@ A simple, beginner-friendly web-based metronome designed for piano practice. Per
 - Minimalist interface
 
 ## How to Use 🚀
-1. Access the live version: [GitHub Pages Link]
+1. Access the live version: [https://sunnyoung22.github.io/EVAN-S-METRONOME/]
 2. Set your desired BPM using the slider
-3. Choose time signature (coming soon!)
-4. Click the play button to start
+3. Choose time signature
+4. Click the start button to start
 
 ## Technical Details 🔧
 - Pure HTML/CSS/JavaScript (no frameworks)
