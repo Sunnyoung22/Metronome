@@ -1,6 +1,5 @@
 # Piano Metronome Web App 🎹
-## Play not just the notes, but the silence between them
-## ——for music breathes where fingers meet soul.
+## Play not just the notes, but the silence between them——for music breathes where fingers meet soul.
 
 A simple, beginner-friendly web-based metronome designed for piano practice. Perfect for learner who need a clean, accessible tempo tool.
 
