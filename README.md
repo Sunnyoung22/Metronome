@@ -1,5 +1,5 @@
 # Piano Metronome Web App 🎹
-## Play not just the notes, but the silence between them——for music breathes where fingers meet soul.
+# Play not just the notes, but the silence between them——for music breathes where fingers meet soul.
 
 A simple, beginner-friendly web-based metronome designed for piano practice. Perfect for learner who need a clean, accessible tempo tool.
 
@@ -33,5 +33,6 @@ To run locally:
 git clone https://github.com/sunnyoung22/piano-metronome.git
 cd metronome
 # Just open index.html in your browser!
+```
 
 ## Practice slow to grow; haste is the thief of artistry.
