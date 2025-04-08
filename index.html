@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EVAN'S METRONOME</title>
+    <style>
+        /* CSS Variables (Light Theme Only) */
+        :root {
+            --primary-color: #3498db;
+            --primary-darker: #2980b9;
+            --secondary-color: #ecf0f1;
+            --secondary-darker: #e0e0e0;
+            --text-dark: #2c3e50;
+            --text-medium: #34495e;
+            --text-light: #7f8c8d;
+            --text-lighter: #95a5a6;
+            --text-lightest: #bdc3c7;
+            --background-light: #f5f7fa;
+            --background-card: #fff;
+            --white: #fff;
+            --border-color: #e0e0e0;
+            --shadow-color: rgba(0,0,0,0.08);
+            --shadow-active-color: rgba(52,152,219,0.4);
+
+            /* Accent Beat Colors (Light) */
+            --accent-beat-bg: #f0f0f0;
+            --accent-beat-border: #ccc;
+            --accent-beat-accent-bg: var(--primary-color);
+            --accent-beat-accent-text: var(--white);
+            --accent-beat-normal-bg: #e0e0e0;
+            --accent-beat-normal-text: var(--text-dark);
+            --accent-beat-mute-bg: #fafafa;
+            --accent-beat-mute-text: var(--text-lightest);
+            --accent-beat-mute-border: #eee;
+
+            --border-radius-small: 3px;
+            --border-radius-medium: 6px;
+            --border-radius-large: 10px; /* Slightly smaller */
+            --font-family-main: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+            /* Reduced Gaps for Compactness */
+            --gap-container: 10px;
+            --gap-section: 10px;
+            --gap-group: 8px;
+            --gap-row: 8px;
+            --gap-controls: 5px;
+        }
+
+        /* Typography and Base Styles */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: var(--font-family-main);
+            color: var(--text-dark);
+            background-color: var(--background-light);
+            line-height: 1.45; /* Slightly tighter */
+            padding: 12px 8px; /* Reduced padding */
+            max-width: 100%;
+            overflow-x: hidden;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .container {
+            max-width: 450px; /* Narrower */
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--background-card);
+            border-radius: var(--border-radius-large);
+            box-shadow: 0 3px 12px var(--shadow-color); /* Softer shadow */
+            padding: 14px 12px; /* Reduced padding */
+            gap: var(--gap-container);
+        }
+
+        /* Header Section */
+        .header {
+            text-align: center;
+            margin-bottom: -2px; /* Pull elements slightly closer */
+        }
+        h1 {
+            font-size: 18px; /* Smaller */
+            font-weight: 600;
+            letter-spacing: 0.5px; /* Less spacing */
+            text-transform: uppercase;
+            margin-bottom: 1px;
+            color: var(--text-medium);
+        }
+        .subtitle {
+            font-size: 11px; /* Smaller */
+            font-style: italic;
+            color: var(--text-light);
+            line-height: 1.2; /* Tighter line height */
+        }
+        .subtitle + .subtitle { margin-top: -1px; }
+
+        /* Beat Visualizer */
+        .beat-display { display: flex; flex-direction: column; align-items: center; padding: 3px 0; }
+        .visual-beat {
+            width: 60px; height: 60px; /* Smaller */
+            background-color: var(--secondary-color);
+            border-radius: 50%; transition: transform 0.1s, background-color 0.1s, box-shadow 0.1s;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.05); margin-bottom: 8px; /* Reduced margin */
+            color: var(--white); font-weight: 300;
+        }
+        .beat-active { background-color: var(--primary-color); transform: scale(1.05); box-shadow: 0 0 12px var(--shadow-active-color); }
+        .beat-count { font-size: 28px; /* Smaller */ }
+        .tempo-display { font-size: 36px; /* Smaller */ font-weight: 300; color: var(--text-dark); margin: 0; }
+        .tempo-text { font-size: 13px; /* Smaller */ color: var(--text-light); font-style: italic; margin-top: -3px; /* Pull closer */ }
+
+        /* Control Sections */
+        .control-section { display: flex; flex-direction: column; gap: var(--gap-section); }
+        .control-group { display: flex; flex-direction: column; gap: var(--gap-group); }
+        .control-row { display: flex; gap: var(--gap-row); align-items: flex-start; }
+        .control-col { flex: 1; }
+        label {
+            font-size: 12px; /* Smaller */ color: var(--text-light); font-weight: 500;
+            margin-bottom: 1px; /* Reduced margin */ display: block;
+            white-space: nowrap; /* Prevent labels wrapping */
+            overflow: hidden;
+            text-overflow: ellipsis; /* Add ellipsis if label too long */
+        }
+
+        /* Inputs and Controls */
+        input[type="range"] {
+            width: 100%; height: 4px; /* Thinner */ -webkit-appearance: none; appearance: none;
+            background: var(--secondary-color); border-radius: var(--border-radius-small);
+            outline: none; margin: 3px 0; /* Reduced margin */ cursor: pointer;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none; width: 15px; height: 15px; /* Smaller */
+            background: var(--primary-color); border-radius: 50%; cursor: pointer;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 15px; height: 15px; background: var(--primary-color);
+            border-radius: 50%; cursor: pointer; border: none;
+        }
+        .tempo-control-header { display: flex; justify-content: space-between; align-items: center; gap: var(--gap-controls); margin-bottom: -2px; /* Pull slider closer */ }
+        .tempo-control-header label { margin-bottom: 0; flex-shrink: 0; }
+        .tempo-input-group { display: flex; align-items: center; gap: var(--gap-controls); flex-shrink: 0; }
+        input[type="number"] {
+            width: 50px; /* Narrower */ padding: 5px; /* Reduced padding */ border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-medium); font-size: 13px; /* Smaller */ text-align: center;
+            font-family: inherit; background-color: var(--background-card); color: var(--text-dark);
+        }
+        input[type=number]::-webkit-outer-spin-button, input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+        .button-row { display: flex; gap: 3px; /* Tighter */ }
+        .tempo-adjust-btn { padding: 3px 7px !important; /* Smaller */ font-size: 13px !important; min-width: 28px; flex: 0 0 auto !important; }
+        select {
+            width: 100%; padding: 6px 7px; /* Adjusted */ border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-medium); font-size: 12px; /* Smaller */ font-family: inherit;
+            background-color: var(--background-card); color: var(--text-dark);
+        }
+        button {
+            padding: 8px 12px; /* Adjusted */ border: none; border-radius: var(--border-radius-medium);
+            font-family: inherit; font-size: 13px; /* Smaller */ font-weight: 500; cursor: pointer;
+            transition: background-color 0.2s, color 0.2s, transform 0.1s ease-out;
+            flex: 1; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+            display: inline-flex; align-items: center; justify-content: center; gap: 3px; /* Smaller gap */
+        }
+        button:active { transform: scale(0.97); }
+        .primary-btn { background-color: var(--primary-color); color: var(--white); }
+        .primary-btn:hover, .primary-btn.active { background-color: var(--primary-darker); }
+        .primary-btn.active { background-color: var(--primary-darker); }
+        .secondary-btn { background-color: var(--secondary-color); color: var(--text-dark); }
+        .secondary-btn:hover { background-color: var(--secondary-darker); }
+
+        /* Sound Options */
+        .sound-options { display: flex; gap: var(--gap-controls); }
+        .sound-option {
+            flex: 1; padding: 6px 0; /* Reduced padding */ text-align: center; border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-medium); background-color: var(--accent-beat-bg);
+            font-size: 12px; /* Smaller */ cursor: pointer; transition: all 0.2s;
+            touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+            color: var(--text-medium);
+        }
+        .sound-option:hover { background-color: var(--secondary-color); }
+        .sound-option.active {
+            background-color: var(--primary-color); color: var(--white);
+            border-color: var(--primary-color); font-weight: 600;
+        }
+        .sound-option:active { transform: scale(0.97); }
+
+        /* --- Basic Toggle Switch Style (Used by Accent Pattern and Practice Mode) --- */
+        .toggle-switch { position: relative; display: inline-block; width: 34px; height: 18px; flex-shrink: 0;} /* Smaller */
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-switch .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--secondary-darker); transition: .3s; border-radius: 18px; }
+        .toggle-switch .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        .toggle-switch input:checked + .slider { background-color: var(--primary-color); }
+        .toggle-switch input:focus + .slider { box-shadow: 0 0 1px var(--primary-color); }
+        .toggle-switch input:checked + .slider:before { transform: translateX(16px); } /* Adjusted */
+        /* --- End Toggle Switch Style --- */
+
+        /* --- Accent/Muting Pattern (Collapsible) --- */
+        .accent-pattern-section { /* Container for the whole section */
+            padding: 0;
+            margin-top: 0;
+        }
+        .accent-pattern-header {
+            display: flex;
+            justify-content: flex-start; /* Align toggle to the left */
+            align-items: center;
+            gap: 6px; /* Space between toggle and label */
+            margin-bottom: 5px; /* Space before controls if shown */
+        }
+        .accent-pattern-header label[for="accentPatternToggle"] { /* Label next to toggle */
+            margin-bottom: 0;
+            font-weight: 500;
+            color: var(--text-medium);
+            cursor: pointer; /* Make label clickable for toggle */
+        }
+        .accent-pattern-container {
+            display: flex;
+            gap: 3px; /* Reduced gap */
+            justify-content: center;
+            flex-wrap: wrap;
+            /* Collapsible styles */
+            overflow: hidden;
+            max-height: 0; /* Initially hidden */
+            opacity: 0; /* Initially hidden */
+            transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin-top 0.3s ease-out; /* Smooth transition */
+            margin-top: 0; /* No margin when hidden */
+        }
+        .accent-pattern-container.visible {
+             max-height: 100px; /* Allow space for controls - adjust if needed */
+             opacity: 1;
+             margin-top: 5px; /* Add margin when visible */
+        }
+        .accent-beat-selector {
+            width: 26px; /* Smaller */
+            height: 26px; /* Smaller */
+            border: 1px solid var(--accent-beat-border);
+            border-radius: var(--border-radius-small); /* Smaller radius */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px; /* Smaller */
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+            flex-shrink: 0;
+            line-height: 1; /* Ensure text centers vertically */
+        }
+        .accent-beat-selector.state-accent { background-color: var(--accent-beat-accent-bg); color: var(--accent-beat-accent-text); border-color: var(--accent-beat-accent-bg); }
+        .accent-beat-selector.state-normal { background-color: var(--accent-beat-normal-bg); color: var(--accent-beat-normal-text); border-color: var(--accent-beat-border); }
+        .accent-beat-selector.state-mute { background-color: var(--accent-beat-mute-bg); color: var(--accent-beat-mute-text); border-color: var(--accent-beat-mute-border); font-style: italic; }
+
+        /* --- Practice Mode (Collapsible) --- */
+        .practice-mode-section {
+            /* Remove border, rely on spacing */
+            padding: 0;
+            margin-top: 0;
+        }
+        .practice-mode-header {
+            display: flex;
+            justify-content: flex-start; /* Align toggle to the left */
+            align-items: center;
+            gap: 6px; /* Space between toggle and label */
+            margin-bottom: 5px; /* Space before controls if shown */
+        }
+        .practice-mode-header label[for="practiceModeToggle"] { /* Label next to toggle */
+            margin-bottom: 0;
+            font-weight: 500;
+            color: var(--text-medium);
+            cursor: pointer; /* Make label clickable for toggle */
+        }
+        .practice-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); /* Adjust minmax */
+            gap: var(--gap-row) var(--gap-controls); /* Different row/column gap */
+            overflow: hidden; /* Needed for smooth transition */
+            max-height: 0; /* Initially hidden */
+            opacity: 0; /* Initially hidden */
+            transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin-top 0.3s ease-out; /* Smooth transition */
+            margin-top: 0; /* No margin when hidden */
+        }
+        .practice-controls.visible {
+             max-height: 150px; /* Allow space for controls - adjust if needed */
+             opacity: 1;
+             margin-top: 5px; /* Add margin when visible */
+        }
+        .practice-controls .control-col label { font-size: 10px; color: var(--text-lighter); } /* Smaller labels */
+        .practice-controls input[type="number"] { width: 100%; font-size: 12px; padding: 4px; } /* Smaller inputs */
+
+        /* Disable controls when practice mode is active AND playing */
+        .practice-mode-active .tempo-control-header input,
+        .practice-mode-active .tempo-control-header button,
+        .practice-mode-active #tempoSlider,
+        .practice-mode-active #commonTempos,
+        .practice-mode-active #tap {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* Volume Control */
+        .volume-control-group label { margin-bottom: 0; }
+        .volume-control-group { gap: 3px; } /* Reduce gap */
+
+        /* Footer */
+        footer { text-align: center; margin-top: 8px; /* Slightly more space */ font-size: 11px; /* Smaller */ color: var(--text-lighter); font-style: italic; }
+        .keyboard-shortcut { margin-top: 1px; font-size: 9px; /* Smaller */ color: var(--text-lightest); }
+
+        /* Responsive adjustments */
+        @media (max-width: 400px) { /* Adjust breakpoint */
+            .container { padding: 10px 8px; gap: 8px; }
+            .control-section { gap: 8px; }
+            .control-group { gap: 6px; }
+            .tempo-control-header { flex-wrap: wrap; gap: 3px; }
+            .tempo-control-header label { width: 100%; margin-bottom: 2px; }
+            .tempo-input-group { width: 100%; justify-content: space-between; }
+            input[type="number"] { width: 55px; } /* Allow slightly more */
+            .control-row { gap: 6px; }
+            .control-col select { font-size: 11px; padding: 4px 3px; }
+            .control-col label { font-size: 11px; }
+            button { font-size: 12px; padding: 7px 9px; }
+            .tempo-adjust-btn { padding: 3px 6px !important; font-size: 12px !important;}
+            .sound-option { font-size: 11px; }
+            h1 { font-size: 17px;}
+            .subtitle { font-size: 10px;}
+            .tempo-display { font-size: 34px;}
+            .tempo-text { font-size: 12px;}
+            .visual-beat { width: 55px; height: 55px;}
+            .beat-count { font-size: 26px;}
+            .accent-beat-selector { width: 24px; height: 24px; font-size: 10px; }
+            .practice-controls { grid-template-columns: repeat(2, 1fr); }
+            .accent-pattern-container { justify-content: flex-start; } /* Align left on small screens */
+        }
+         @media (max-width: 340px) {
+             .accent-beat-selector { width: 22px; height: 22px; font-size: 9px; }
+             .practice-controls { grid-template-columns: 1fr; } /* Stack practice controls */
+             .control-row { flex-direction: column; align-items: stretch; gap: 5px;} /* Stack time sig/common tempos */
+             .control-col { width: 100%; }
+         }
+
+    </style>
+</head>
+<body>
+    <div class="container" id="metronomeContainer">
+        <div class="header">
+            <h1>EVAN'S METRONOME</h1>
+            <div class="subtitle">Play not just the notes, but the silence between them</div>
+            <div class="subtitle">——for music breathes where fingers meet soul</div>
+            </div>
+
+        <div class="beat-display">
+            <div class="visual-beat" id="visualBeat">
+                <span class="beat-count" id="beatCount"></span>
+            </div>
+            <div class="tempo-display" id="tempoDisplay">80</div>
+            <div class="tempo-text" id="tempoText">Adagio</div>
+        </div>
+
+        <div class="control-section">
+            <!-- Tempo Controls -->
+            <div class="control-group">
+                <div class="tempo-control-header">
+                    <label for="tempoSlider">Tempo (BPM)</label>
+                    <div class="tempo-input-group">
+                        <input type="number" id="tempoInput" min="30" max="250" value="80">
+                        <div class="button-row">
+                            <button class="secondary-btn tempo-adjust-btn" id="tempoDown" aria-label="Decrease Tempo">-</button>
+                            <button class="secondary-btn tempo-adjust-btn" id="tempoUp" aria-label="Increase Tempo">+</button>
+                         </div>
+                    </div>
+                </div>
+                <input type="range" id="tempoSlider" min="30" max="250" value="80" step="1" aria-valuetext="80 BPM, Adagio">
+            </div>
+
+            <!-- Time Signature & Common Tempos -->
+            <div class="control-row">
+                <div class="control-col">
+                    <label for="timeSignature">Time Sig.</label>
+                    <select id="timeSignature">
+                        <option value="2">2/4</option>
+                        <option value="3">3/4</option>
+                        <option value="4" selected>4/4</option>
+                        <option value="5">5/4</option>
+                        <option value="6">6/8</option>
+                        <option value="7">7/8</option>
+                        <option value="9">9/8</option>
+                        <option value="12">12/8</option>
+                    </select>
+                </div>
+                <div class="control-col">
+                    <label for="commonTempos">Common</label>
+                    <select id="commonTempos">
+                        <option value="" disabled selected>Select...</option>
+                        <option value="50" data-name="Grave">Grave (50)</option>
+                        <option value="60" data-name="Largo">Largo (60)</option>
+                        <option value="76" data-name="Adagio">Adagio (76)</option>
+                        <option value="108" data-name="Andante">Andante (108)</option>
+                        <option value="120" data-name="Moderato">Moderato (120)</option>
+                        <option value="144" data-name="Allegro">Allegro (144)</option>
+                        <option value="168" data-name="Vivace">Vivace (168)</option>
+                        <option value="184" data-name="Presto">Presto (184)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Sound Options -->
+            <div class="control-group">
+                <label>Sound</label>
+                <div class="sound-options">
+                    <div class="sound-option active" data-sound="classic">Classic</div>
+                    <div class="sound-option" data-sound="wood">Wood</div>
+                    <div class="sound-option" data-sound="digital">Digital</div>
+                </div>
+            </div>
+
+            <!-- Volume Control -->
+            <div class="control-group volume-control-group">
+                 <label for="volumeSlider">Volume</label>
+                 <input type="range" id="volumeSlider" min="0" max="1" value="0.7" step="0.05" aria-label="Master Volume">
+            </div>
+
+            <!-- Accent/Muting Pattern (Collapsible) - MOVED & UPDATED -->
+            <div class="control-group accent-pattern-section">
+                <div class="accent-pattern-header">
+                     <label class="toggle-switch">
+                        <input type="checkbox" id="accentPatternToggle">
+                        <span class="slider"></span>
+                    </label>
+                    <label for="accentPatternToggle">Accent Pattern (A/N/M)</label>
+                </div>
+                <div class="accent-pattern-container" id="accentPatternContainer">
+                    <!-- Beat selectors will be generated here by JS -->
+                </div>
+            </div>
+
+            <!-- Practice Mode Section (Collapsible) -->
+            <div class="control-group practice-mode-section">
+                <div class="practice-mode-header">
+                     <label class="toggle-switch">
+                        <input type="checkbox" id="practiceModeToggle">
+                        <span class="slider"></span>
+                    </label>
+                    <label for="practiceModeToggle">Auto Tempo / Practice</label>
+                </div>
+                <div class="practice-controls" id="practiceControlsContainer">
+                    <div class="control-col">
+                        <label for="practiceStartTempo">Start</label>
+                        <input type="number" id="practiceStartTempo" min="30" max="250" value="80">
+                    </div>
+                    <div class="control-col">
+                        <label for="practiceEndTempo">End</label>
+                        <input type="number" id="practiceEndTempo" min="30" max="250" value="120">
+                    </div>
+                    <div class="control-col">
+                        <label for="practiceIncrement">Inc.</label>
+                        <input type="number" id="practiceIncrement" min="1" max="50" value="4">
+                    </div>
+                    <div class="control-col">
+                        <label for="practiceInterval">Every (Measures)</label>
+                        <input type="number" id="practiceInterval" min="1" max="100" value="8">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Action Buttons -->
+            <div class="control-group">
+                <div class="button-row">
+                    <button class="primary-btn" id="startStop"><span class="icon">▶</span> Start</button>
+                    <button class="secondary-btn" id="tap">Tap Tempo</button>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            EVAN'S METRONOME &copy; 2025.04
+            <div class="keyboard-shortcut">Space: Start/Stop, T: Tap, 1-3: Sound, Arrows: Tempo</div>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Configuration ---
+            const SCHEDULE_AHEAD_TIME = 0.1;
+            const LOOKAHEAD_INTERVAL = 25.0;
+            const TAP_TIMEOUT = 2000;
+            const ACCENT_STATES = ['accent', 'normal', 'mute'];
+            const LOCAL_STORAGE_KEY = 'evanMetronomeSettings'; // Key for localStorage
+
+            // --- DOM Elements ---
+            const metronomeContainer = document.getElementById('metronomeContainer');
+            const tempoSlider = document.getElementById('tempoSlider');
+            const tempoInput = document.getElementById('tempoInput');
+            const tempoDisplay = document.getElementById('tempoDisplay');
+            const tempoText = document.getElementById('tempoText');
+            const timeSignatureSelect = document.getElementById('timeSignature');
+            const commonTemposSelect = document.getElementById('commonTempos');
+            const startStopButton = document.getElementById('startStop');
+            const tapButton = document.getElementById('tap');
+            const visualBeat = document.getElementById('visualBeat');
+            const beatCount = document.getElementById('beatCount');
+            const tempoUpButton = document.getElementById('tempoUp');
+            const tempoDownButton = document.getElementById('tempoDown');
+            const soundOptions = document.querySelectorAll('.sound-option');
+            const volumeSlider = document.getElementById('volumeSlider');
+            // Accent Pattern Elements
+            const accentPatternToggle = document.getElementById('accentPatternToggle');
+            const accentPatternContainer = document.getElementById('accentPatternContainer');
+            // Practice Mode Elements
+            const practiceModeToggle = document.getElementById('practiceModeToggle');
+            const practiceControlsContainer = document.getElementById('practiceControlsContainer');
+            const practiceStartTempoInput = document.getElementById('practiceStartTempo');
+            const practiceEndTempoInput = document.getElementById('practiceEndTempo');
+            const practiceIncrementInput = document.getElementById('practiceIncrement');
+            const practiceIntervalInput = document.getElementById('practiceInterval');
+
+            // --- Audio Variables ---
+            let audioContext = null;
+            let masterGainNode = null;
+            let isAudioInitialized = false;
+            let currentSoundType = 'classic'; // Default
+            // Simplified sound types
+            const soundTypes = {
+                 classic: { accent: { freq: 1000, gain: 0.8, decay: 0.08, type: 'sine' }, normal: { freq: 800, gain: 0.5, decay: 0.08, type: 'sine' } },
+                 wood: { accent: { freq: 1800, gain: 0.9, decay: 0.06, type: 'triangle' }, normal: { freq: 1200, gain: 0.6, decay: 0.06, type: 'triangle' } },
+                 digital: { accent: { freq: 440, gain: 0.7, decay: 0.04, type: 'square' }, normal: { freq: 330, gain: 0.5, decay: 0.04, type: 'square' } }
+            };
+
+            // --- Metronome State ---
+            let isPlaying = false;
+            let currentBeatInMeasure = 0;
+            let tempo = 80; // Default, will be overwritten by loadSettings if available
+            let beatsPerMeasure = 4; // Default
+            let nextNoteTime = 0.0;
+            let schedulerTimerID = null;
+            let accentPattern = []; // Will be populated by updateAccentPatternUI or loadSettings
+            let isAccentPatternVisible = false; // Default
+
+            // --- Tap Tempo State ---
+            let tapTimes = [];
+            let lastTapTime = 0;
+
+            // --- Practice Mode State ---
+            let isPracticeModeActive = false; // Default
+            let practiceStartTempo = 80; // Default
+            let practiceEndTempo = 120; // Default
+            let practiceIncrement = 4; // Default
+            let practiceInterval = 8; // Default
+            let practiceCurrentMeasureCount = 0;
+            let practiceInitialTempo = 80; // Default, will be updated by loadSettings or setPracticeModeActive
+
+            // --- Tempo Name Mapping ---
+             const tempoMap = [
+                { max: 59, name: "Grave" }, { max: 75, name: "Largo" }, { max: 107, name: "Adagio" },
+                { max: 119, name: "Andante" }, { max: 143, name: "Moderato" }, { max: 167, name: "Allegro" },
+                { max: 183, name: "Vivace" }, { max: Infinity, name: "Presto" }
+            ];
+
+            // --- State Persistence ---
+            function saveSettings() {
+                const settings = {
+                    tempo: tempo,
+                    volume: parseFloat(volumeSlider.value),
+                    timeSignature: timeSignatureSelect.value,
+                    soundType: currentSoundType,
+                    accentPattern: accentPattern,
+                    isAccentPatternVisible: accentPatternToggle.checked,
+                    isPracticeModeActive: practiceModeToggle.checked,
+                    practiceStartTempo: parseInt(practiceStartTempoInput.value, 10) || 80, // Ensure valid numbers
+                    practiceEndTempo: parseInt(practiceEndTempoInput.value, 10) || 120,
+                    practiceIncrement: parseInt(practiceIncrementInput.value, 10) || 4,
+                    practiceInterval: parseInt(practiceIntervalInput.value, 10) || 8,
+                    // practiceInitialTempo is transient, no need to save
+                };
+                try {
+                    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(settings));
+                    // console.log("Settings saved:", settings);
+                } catch (e) {
+                    console.error("Error saving settings to localStorage:", e);
+                }
+            }
+
+            function loadSettings() {
+                try {
+                    const savedSettings = localStorage.getItem(LOCAL_STORAGE_KEY);
+                    if (savedSettings) {
+                        const settings = JSON.parse(savedSettings);
+                        // console.log("Settings loaded:", settings);
+
+                        // Apply loaded settings (use defaults if a value is missing/invalid)
+
+                        // 1. Apply main tempo first
+                        setTempoValidated(settings.tempo || 80);
+                        // 2. *** FIX: Set practiceInitialTempo AFTER main tempo is loaded ***
+                        practiceInitialTempo = tempo;
+
+                        // 3. Apply other settings
+                        volumeSlider.value = settings.volume !== undefined ? settings.volume : 0.7;
+                        timeSignatureSelect.value = settings.timeSignature || '4';
+                        changeSoundType(settings.soundType || 'classic'); // Updates UI too
+
+                        isAccentPatternVisible = settings.isAccentPatternVisible !== undefined ? settings.isAccentPatternVisible : false;
+                        accentPatternToggle.checked = isAccentPatternVisible;
+                        // Note: setAccentPatternVisible called later after UI is built
+
+                        isPracticeModeActive = settings.isPracticeModeActive !== undefined ? settings.isPracticeModeActive : false;
+                        practiceModeToggle.checked = isPracticeModeActive;
+                        practiceStartTempoInput.value = settings.practiceStartTempo || 80;
+                        practiceEndTempoInput.value = settings.practiceEndTempo || 120;
+                        practiceIncrementInput.value = settings.practiceIncrement || 4;
+                        practiceIntervalInput.value = settings.practiceInterval || 8;
+
+                        // 4. Update Accent Pattern UI *after* other settings (like time sig) are loaded
+                        updateAccentPatternUI(settings.accentPattern); // Pass loaded pattern
+                        setAccentPatternVisible(isAccentPatternVisible); // Apply visibility class now
+
+                        // 5. Apply practice mode visibility class AFTER setting its inputs and initial tempo
+                        // This call will now use the correctly set practiceInitialTempo if turning off
+                        setPracticeModeActive(isPracticeModeActive);
+
+                        // 6. Update master gain node if audio is already initialized
+                        if (masterGainNode) {
+                             masterGainNode.gain.setValueAtTime(parseFloat(volumeSlider.value), audioContext.currentTime);
+                        }
+
+                        return true; // Indicate settings were loaded
+                    }
+                } catch (e) {
+                    console.error("Error loading settings from localStorage:", e);
+                     localStorage.removeItem(LOCAL_STORAGE_KEY); // Clear potentially corrupted data
+                }
+                return false; // Indicate settings were not loaded
+            }
+
+            // --- Audio Initialization ---
+             function initAudio() {
+                 if (isAudioInitialized) return;
+                 try {
+                     audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                     masterGainNode = audioContext.createGain();
+                     masterGainNode.gain.setValueAtTime(parseFloat(volumeSlider.value), audioContext.currentTime);
+                     masterGainNode.connect(audioContext.destination);
+                     isAudioInitialized = true;
+                     console.log("AudioContext initialized.");
+                 } catch (e) { console.error("Web Audio API Error", e); alert("Browser doesn't support Web Audio."); }
+             }
+
+             // --- Sound Playback ---
+              function playSound(time, beatType) {
+                 if (!audioContext || !masterGainNode) return;
+                 const soundSet = soundTypes[currentSoundType];
+                 const settings = soundSet[beatType];
+                 if (!settings) return;
+
+                 const osc = audioContext.createOscillator();
+                 const gain = audioContext.createGain();
+                 osc.connect(gain); gain.connect(masterGainNode);
+                 osc.frequency.setValueAtTime(settings.freq, time);
+                 osc.type = settings.type;
+                 gain.gain.setValueAtTime(settings.gain, time);
+                 gain.gain.exponentialRampToValueAtTime(0.001, time + settings.decay);
+                 osc.start(time); osc.stop(time + settings.decay + 0.02);
+             }
+
+             // --- Visual Update ---
+              function flashVisualBeat(beatNumber) {
+                 visualBeat.classList.add('beat-active');
+                 beatCount.textContent = beatNumber;
+                 setTimeout(() => { visualBeat.classList.remove('beat-active'); }, 80);
+             }
+
+            // --- Scheduling Logic ---
+            function scheduleNote(beatNumber, time) {
+                const patternIndex = beatNumber - 1;
+                // Ensure accentPattern has been initialized
+                const beatState = (accentPattern && accentPattern[patternIndex]) ? accentPattern[patternIndex] : 'normal';
+
+                if (beatState !== 'mute') {
+                    playSound(time, beatState === 'accent' ? 'accent' : 'normal');
+                    const visualDelay = Math.max(0, (time - audioContext.currentTime - 0.01) * 1000);
+                    setTimeout(() => {
+                        if (isPlaying) { flashVisualBeat(beatNumber); }
+                    }, visualDelay);
+                }
+            }
+
+            function scheduler() {
+                while (nextNoteTime < audioContext.currentTime + SCHEDULE_AHEAD_TIME) {
+                    currentBeatInMeasure = (currentBeatInMeasure % beatsPerMeasure) + 1;
+                    scheduleNote(currentBeatInMeasure, nextNoteTime);
+
+                    // --- Practice Mode Logic ---
+                    if (isPracticeModeActive && currentBeatInMeasure === beatsPerMeasure) {
+                        practiceCurrentMeasureCount++;
+                        if (practiceCurrentMeasureCount >= practiceInterval) {
+                            const currentTempo = tempo;
+                            // Read increment value *during* scheduling to allow changes
+                            const currentIncrement = parseInt(practiceIncrementInput.value, 10) || 4;
+                            const currentEndTempo = parseInt(practiceEndTempoInput.value, 10) || 120;
+                            let newTempo = currentTempo + currentIncrement;
+
+                            if ((currentIncrement > 0 && newTempo >= currentEndTempo) || (currentIncrement < 0 && newTempo <= currentEndTempo)) {
+                                newTempo = currentEndTempo;
+                                updateTempoUI(newTempo);
+                                saveSettings(); // Save final tempo before stopping
+                                //stopMetronome(); // Stop automatically EVAN
+                            } else {
+                                updateTempoUI(newTempo);
+                                saveSettings(); // Save updated tempo
+                            }
+                            practiceCurrentMeasureCount = 0;
+                        }
+                    }
+                     // --- End Practice Mode Logic ---
+
+                    const secondsPerBeat = 60.0 / tempo;
+                    nextNoteTime += secondsPerBeat;
+                }
+                schedulerTimerID = setTimeout(scheduler, LOOKAHEAD_INTERVAL);
+            }
+
+            // --- Metronome Control ---
+            function startMetronome() {
+                 if (isPlaying) return;
+                 initAudio();
+                 if (!audioContext) return;
+                 if (audioContext.state === 'suspended') { audioContext.resume(); }
+
+                 // --- Practice Mode Start ---
+                 if (isPracticeModeActive) {
+                     // Read settings directly from inputs when starting
+                     practiceStartTempo = Math.max(30, Math.min(250, parseInt(practiceStartTempoInput.value, 10) || 80));
+                     practiceEndTempo = Math.max(30, Math.min(250, parseInt(practiceEndTempoInput.value, 10) || 120));
+                     practiceIncrement = parseInt(practiceIncrementInput.value, 10) || 4; // Can be negative
+                     practiceInterval = Math.max(1, parseInt(practiceIntervalInput.value, 10) || 8);
+
+                     // Validate settings before starting
+                     if ((practiceIncrement > 0 && practiceStartTempo >= practiceEndTempo) ||
+                         (practiceIncrement < 0 && practiceStartTempo <= practiceEndTempo) ||
+                          practiceIncrement === 0) {
+                         console.warn("Practice mode settings invalid (Start vs End Tempo or Increment is 0). Disabling.");
+                         practiceModeToggle.checked = false;
+                         setPracticeModeActive(false); // Update state and UI
+                         // Use the tempo that was set *before* attempting to start practice mode
+                         setTempoValidated(tempo);
+                         saveSettings(); // Save the change (practice mode off)
+                     } else {
+                         // Settings are valid, start practice mode tempo
+                         updateTempoUI(practiceStartTempo);
+                         practiceCurrentMeasureCount = 0;
+                         metronomeContainer.classList.add('practice-mode-active'); // Add class to disable controls
+                         saveSettings(); // Save start tempo if practice mode is valid
+                     }
+                 } else {
+                     metronomeContainer.classList.remove('practice-mode-active'); // Ensure class is removed
+                 }
+                 // --- End Practice Mode Start ---
+
+                 // Only proceed if practice mode didn't disable itself
+                 if (!isPracticeModeActive || metronomeContainer.classList.contains('practice-mode-active')) {
+                     isPlaying = true;
+                     currentBeatInMeasure = 0;
+                     nextNoteTime = audioContext.currentTime + 0.1;
+                     scheduler();
+                     startStopButton.innerHTML = '<span class="icon">❚❚</span> Stop';
+                     startStopButton.classList.add('active');
+                     visualBeat.style.opacity = 1;
+                     beatCount.textContent = '●';
+                 }
+             }
+
+             function stopMetronome() {
+                 if (!isPlaying) return;
+                 isPlaying = false;
+                 clearTimeout(schedulerTimerID);
+                 beatCount.textContent = '';
+                 visualBeat.classList.remove('beat-active');
+                 visualBeat.style.opacity = 0.5;
+                 startStopButton.innerHTML = '<span class="icon">▶</span> Start';
+                 startStopButton.classList.remove('active');
+                 metronomeContainer.classList.remove('practice-mode-active'); // Always remove class when stopped
+
+                 // Reset practice count, but don't reset tempo if stopped during practice
+                 practiceCurrentMeasureCount = 0;
+             }
+
+            function toggleMetronome() {
+                if (isPlaying) { stopMetronome(); } else { startMetronome(); }
+            }
+
+            // --- UI Update Functions ---
+            function updateTempoUI(newTempo) {
+                // Update state variable 'tempo'
+                tempo = newTempo;
+
+                // Update UI elements
+                tempoDisplay.textContent = tempo;
+                tempoSlider.value = tempo;
+                tempoInput.value = tempo;
+
+                // Only reset common tempos if not in active practice mode OR if just stopped
+                if (!(isPracticeModeActive && isPlaying)) {
+                     commonTemposSelect.selectedIndex = 0;
+                }
+
+                const tempoName = tempoMap.find(item => tempo <= item.max)?.name || "Unknown";
+                tempoText.textContent = tempoName;
+                tempoSlider.setAttribute('aria-valuetext', `${tempo} BPM, ${tempoName}`);
+
+                // Adjust scheduler timing if playing
+                if (isPlaying) {
+                    nextNoteTime = audioContext.currentTime + 0.05;
+                }
+             }
+
+            function setTempoValidated(value) {
+                // Prevent manual tempo changes while practice mode is active and running
+                if (isPracticeModeActive && isPlaying) return;
+
+                let newTempo = parseInt(value, 10);
+                if (isNaN(newTempo)) newTempo = 80; // Default if invalid input
+                newTempo = Math.max(30, Math.min(250, newTempo)); // Clamp range
+
+                updateTempoUI(newTempo); // Update state and UI
+
+                // If practice mode is enabled but not running, update the start tempo input as well
+                if (isPracticeModeActive && !isPlaying) {
+                    practiceStartTempoInput.value = newTempo;
+                }
+
+                saveSettings(); // Save updated tempo and potentially practice start tempo
+            }
+
+            // --- Tap Tempo Logic ---
+            function tapTempo() {
+                // Prevent tapping while practice mode is active and running
+                if (isPracticeModeActive && isPlaying) return;
+
+                initAudio(); if (!audioContext) return;
+                const now = audioContext.currentTime * 1000;
+                playSound(audioContext.currentTime, 'normal'); // Play feedback click
+
+                // Reset taps if timeout exceeded
+                if (lastTapTime && (now - lastTapTime > TAP_TIMEOUT)) {
+                    tapTimes = [];
+                }
+                tapTimes.push(now);
+                lastTapTime = now;
+                // Keep only the last few taps for averaging
+                if (tapTimes.length > 5) {
+                    tapTimes.shift();
+                }
+
+                // Calculate tempo if enough taps
+                if (tapTimes.length > 1) {
+                    let sumOfIntervals = 0;
+                    for (let i = 1; i < tapTimes.length; i++) {
+                        sumOfIntervals += tapTimes[i] - tapTimes[i - 1];
+                    }
+                    const avgInterval = sumOfIntervals / (tapTimes.length - 1);
+                    if (avgInterval > 0) {
+                        const newTempo = Math.round(60000 / avgInterval);
+                        // Validate and apply the calculated tempo
+                        if (newTempo >= 30 && newTempo <= 250) {
+                            updateTempoUI(newTempo); // Update state and UI
+                            // If practice mode enabled but not running, update start tempo
+                            if (isPracticeModeActive && !isPlaying) {
+                                practiceStartTempoInput.value = newTempo;
+                            }
+                            saveSettings(); // Save tapped tempo and potentially practice start
+                        }
+                    }
+                }
+                 // Visual feedback for tap button
+                 tapButton.style.filter = 'brightness(85%)';
+                 setTimeout(() => { tapButton.style.filter = ''; }, 100);
+             }
+
+            // --- Sound Type Change ---
+              function changeSoundType(type) {
+                 initAudio();
+                 if (!soundTypes[type]) type = 'classic'; // Fallback to default if type is invalid
+                 currentSoundType = type;
+                 // Update UI selection state
+                 soundOptions.forEach(option => {
+                     option.classList.toggle('active', option.dataset.sound === type);
+                 });
+                 // Play a preview click if audio is ready and running
+                 if (audioContext && isAudioInitialized && audioContext.state === 'running') {
+                     playSound(audioContext.currentTime, 'accent');
+                 }
+                 saveSettings(); // Save selected sound
+              }
+
+            // --- Accent Pattern UI ---
+            // Accepts an optional loadedPattern array to restore state
+            function updateAccentPatternUI(loadedPattern = null) {
+                accentPatternContainer.innerHTML = ''; // Clear existing selectors
+                const currentBeats = parseInt(timeSignatureSelect.value, 10);
+                beatsPerMeasure = currentBeats; // Update global state
+
+                // Use loaded pattern if valid, otherwise generate default
+                let useLoadedPattern = loadedPattern && loadedPattern.length === currentBeats;
+                accentPattern = useLoadedPattern ? [...loadedPattern] : []; // Use copy or start fresh
+
+                for (let i = 0; i < currentBeats; i++) {
+                    const beatSelector = document.createElement('div');
+                    beatSelector.classList.add('accent-beat-selector');
+                    beatSelector.dataset.beatIndex = i;
+
+                    let initialState;
+                    if (useLoadedPattern) {
+                        // Validate loaded state for this beat
+                        initialState = ACCENT_STATES.includes(loadedPattern[i]) ? loadedPattern[i] : 'normal';
+                    } else {
+                        // Generate default pattern if no valid loaded pattern
+                        initialState = (i === 0) ? 'accent' : 'normal';
+                        // Simple default for compound meters (can be refined)
+                        if ((currentBeats === 6 || currentBeats === 9 || currentBeats === 12) && i !== 0 && (i % 3 === 0)) {
+                            // Keep subdivision beats normal by default in compound time
+                            initialState = 'normal';
+                        }
+                        accentPattern.push(initialState); // Build the default pattern array
+                    }
+
+                    // Apply state to the element
+                    beatSelector.dataset.state = initialState;
+                    beatSelector.classList.add(`state-${initialState}`);
+                    beatSelector.textContent = initialState.charAt(0).toUpperCase();
+
+                    // Add event listeners
+                    beatSelector.addEventListener('click', handleAccentBeatClick);
+                    beatSelector.addEventListener('touchstart', (e) => {
+                        e.preventDefault(); // Prevent potential double-triggering on touch devices
+                        handleAccentBeatClick(e);
+                    }, { passive: false });
+
+                    accentPatternContainer.appendChild(beatSelector);
+                }
+                 // Reset beat count if time signature changes while playing
+                 if (isPlaying) {
+                     currentBeatInMeasure = 0;
+                 }
+                 // Saving happens when a beat is clicked or time sig changes, not here directly
+            }
+
+
+            function handleAccentBeatClick(event) {
+                const selector = event.currentTarget;
+                const index = parseInt(selector.dataset.beatIndex, 10);
+                const currentState = selector.dataset.state;
+                const currentStateIndex = ACCENT_STATES.indexOf(currentState);
+                const nextStateIndex = (currentStateIndex + 1) % ACCENT_STATES.length;
+                const nextState = ACCENT_STATES[nextStateIndex];
+
+                accentPattern[index] = nextState; // Update the state array
+
+                // Update UI
+                selector.classList.remove(`state-${currentState}`);
+                selector.classList.add(`state-${nextState}`);
+                selector.dataset.state = nextState;
+                selector.textContent = nextState.charAt(0).toUpperCase();
+
+                // Play preview click if audio ready and not muted
+                if (audioContext && isAudioInitialized && audioContext.state === 'running') {
+                    if (nextState !== 'mute') {
+                       playSound(audioContext.currentTime, nextState === 'accent' ? 'accent' : 'normal');
+                    }
+                }
+                saveSettings(); // Save the updated pattern
+            }
+
+            // --- Accent Pattern Toggle Logic ---
+            function setAccentPatternVisible(isVisible) {
+                isAccentPatternVisible = isVisible; // Update state variable
+                if (isVisible) {
+                    accentPatternContainer.classList.add('visible');
+                } else {
+                    accentPatternContainer.classList.remove('visible');
+                }
+                // Saving happens in the event listener or loadSettings
+            }
+
+             // --- Practice Mode Toggle Logic ---
+             function setPracticeModeActive(isActive) {
+                 isPracticeModeActive = isActive; // Update state variable
+                 if (isActive) {
+                     practiceControlsContainer.classList.add('visible');
+                     // Store current tempo as the initial tempo *when activating*
+                     practiceInitialTempo = tempo;
+                     // Set start tempo input based on current tempo if activating
+                     practiceStartTempoInput.value = practiceInitialTempo;
+                     // Sensible default end tempo if current one is invalid or unset
+                     const currentEndTempo = parseInt(practiceEndTempoInput.value, 10);
+                     if (isNaN(currentEndTempo) || currentEndTempo <= practiceInitialTempo) {
+                         practiceEndTempoInput.value = Math.min(250, practiceInitialTempo + 20);
+                     }
+                     // Add class to disable controls *only if playing*
+                     if (isPlaying) {
+                        metronomeContainer.classList.add('practice-mode-active');
+                     }
+                 } else {
+                     practiceControlsContainer.classList.remove('visible');
+                     metronomeContainer.classList.remove('practice-mode-active');
+					 practiceCurrentMeasureCount = 0;// EVAN
+                     // Restore original tempo *only if NOT playing* (otherwise start/stop handles it)
+                     // Use the practiceInitialTempo that was set either on load or when mode was last activated
+                     if (!isPlaying) {
+                        updateTempoUI(practiceInitialTempo);
+                     }
+                 }
+                 // Saving happens in the event listener or loadSettings
+             }
+
+
+            // --- Initial Setup ---
+            const settingsLoaded = loadSettings(); // Try loading settings first
+
+            if (!settingsLoaded) {
+                // Apply defaults ONLY if nothing was loaded from localStorage
+                updateTempoUI(80);
+                practiceInitialTempo = 80; // Ensure default matches
+                changeSoundType('classic');
+                updateAccentPatternUI(); // Build default pattern
+                setAccentPatternVisible(false); // Default hidden
+                setPracticeModeActive(false); // Default off
+                volumeSlider.value = 0.7;
+                practiceStartTempoInput.value = 80;
+                practiceEndTempoInput.value = 120;
+                practiceIncrementInput.value = 4;
+                practiceIntervalInput.value = 8;
+            }
+            // Ensure visual state matches loaded/default state after potential loading
+            visualBeat.style.opacity = 0.5; // Start visually stopped
+
+
+            // --- Event Listeners ---
+            startStopButton.addEventListener('click', toggleMetronome);
+            startStopButton.addEventListener('touchstart', (e) => { e.preventDefault(); toggleMetronome(); }, { passive: false });
+
+            tapButton.addEventListener('click', tapTempo);
+            tapButton.addEventListener('touchstart', (e) => { e.preventDefault(); tapTempo(); }, { passive: false });
+
+            // Use 'input' for real-time UI update, 'change' (on release) might be better for saving less often, but 'input' feels more responsive
+            tempoSlider.addEventListener('input', () => setTempoValidated(tempoSlider.value));
+            // Save on touchend as well for mobile slider release
+            tempoSlider.addEventListener('touchend', () => setTempoValidated(tempoSlider.value), { passive: true });
+
+            tempoInput.addEventListener('change', () => setTempoValidated(tempoInput.value));
+
+            tempoUpButton.addEventListener('click', () => setTempoValidated(tempo + 1));
+            tempoDownButton.addEventListener('click', () => setTempoValidated(tempo - 1));
+            tempoUpButton.addEventListener('touchstart', (e) => { e.preventDefault(); setTempoValidated(tempo + 1); }, { passive: false });
+            tempoDownButton.addEventListener('touchstart', (e) => { e.preventDefault(); setTempoValidated(tempo - 1); }, { passive: false });
+
+            timeSignatureSelect.addEventListener('change', () => {
+                updateAccentPatternUI(); // Rebuild pattern for new time signature
+                saveSettings(); // Save new time signature and resulting default/updated pattern
+            });
+
+            commonTemposSelect.addEventListener('change', () => {
+                if (commonTemposSelect.value) {
+                    setTempoValidated(parseInt(commonTemposSelect.value, 10)); // Will save settings inside
+                }
+            });
+
+            soundOptions.forEach(option => {
+                const type = option.dataset.sound;
+                option.addEventListener('click', () => changeSoundType(type)); // Will save settings inside
+                option.addEventListener('touchstart', (e) => { e.preventDefault(); changeSoundType(type); }, { passive: false });
+            });
+
+            // Update gain node in real-time
+            volumeSlider.addEventListener('input', () => {
+                if (masterGainNode) {
+                    // Use setTargetAtTime for smoother volume changes, though setValueAtTime is simpler
+                    // masterGainNode.gain.setTargetAtTime(parseFloat(volumeSlider.value), audioContext.currentTime, 0.01);
+                    masterGainNode.gain.setValueAtTime(parseFloat(volumeSlider.value), audioContext.currentTime);
+                }
+            });
+             // Save volume setting on release ('change' event)
+             volumeSlider.addEventListener('change', saveSettings);
+
+            // Accent Pattern Toggle Listener
+            accentPatternToggle.addEventListener('change', () => {
+                setAccentPatternVisible(accentPatternToggle.checked);
+                saveSettings(); // Save toggle state
+            });
+            const accentLabel = document.querySelector('label[for="accentPatternToggle"]');
+             if (accentLabel) {
+                 accentLabel.addEventListener('click', () => { // Make label clickable for better UX
+                     accentPatternToggle.checked = !accentPatternToggle.checked;
+                     accentPatternToggle.dispatchEvent(new Event('change')); // Trigger the change event
+                 });
+             }
+
+            // Practice Mode Toggle Listener
+            practiceModeToggle.addEventListener('change', () => {
+                const isActive = practiceModeToggle.checked;
+                setPracticeModeActive(isActive); // Update state and UI visibility
+                saveSettings(); // Save toggle state and potentially updated practiceInitialTempo/inputs
+
+                // If running, stop and restart to apply mode change correctly
+                if (isPlaying) {
+                    stopMetronome();
+                    // Use a short delay before restart to ensure state updates propagate
+                    setTimeout(startMetronome, 50);
+                } else if (!isActive) {
+                    // If turning off while stopped, ensure tempo resets to the stored initial value
+                    updateTempoUI(practiceInitialTempo);
+                    saveSettings(); // Save the restored tempo
+                }
+            });
+             const practiceLabel = document.querySelector('label[for="practiceModeToggle"]');
+             if (practiceLabel) {
+                 practiceLabel.addEventListener('click', () => { // Make label clickable
+                     practiceModeToggle.checked = !practiceModeToggle.checked;
+                     practiceModeToggle.dispatchEvent(new Event('change')); // Trigger the change event
+                 });
+             }
+
+             // Save practice settings when any input value changes
+             [practiceStartTempoInput, practiceEndTempoInput, practiceIncrementInput, practiceIntervalInput].forEach(input => {
+                 input.addEventListener('change', saveSettings);
+             });
+
+             // Prevent clicks inside collapsible areas from propagating strangely (optional but can improve UX)
+             accentPatternContainer.addEventListener('click', (e) => {
+                 // Allow clicks on selectors themselves
+                 if (!e.target.classList.contains('accent-beat-selector')) {
+                     e.stopPropagation();
+                 }
+             });
+             practiceControlsContainer.addEventListener('click', (e) => {
+                 // Allow clicks on number inputs
+                 if (e.target.type !== 'number') {
+                     e.stopPropagation();
+                 }
+             });
+
+
+            // Keyboard Shortcuts
+            document.addEventListener('keydown', (e) => {
+                // Ignore shortcuts if focus is on an input/select element
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+
+                // Check for specific key codes
+                switch (e.code) {
+                    case 'Space':
+                        e.preventDefault(); // Prevent page scroll
+                        toggleMetronome();
+                        break;
+                    case 'KeyT':
+                        e.preventDefault();
+                        tapTempo();
+                        break;
+                    case 'Digit1':
+                        changeSoundType('classic');
+                        break;
+                    case 'Digit2':
+                        changeSoundType('wood');
+                        break;
+                    case 'Digit3':
+                        changeSoundType('digital');
+                        break;
+                    case 'ArrowUp':
+                    case 'ArrowRight':
+                        e.preventDefault(); // Prevent page scroll/input changes
+                        setTempoValidated(tempo + 1);
+                        break;
+                    case 'ArrowDown':
+                    case 'ArrowLeft':
+                        e.preventDefault(); // Prevent page scroll/input changes
+                        setTempoValidated(tempo - 1);
+                        break;
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>
