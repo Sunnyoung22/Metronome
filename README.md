@@ -17,7 +17,7 @@ A simple, beginner-friendly web-based metronome designed for piano practice. Per
 - **Tempo Range**: 30-250 BPM with musical term indicators (Largo → Presto)
 
 ## How to Use 🚀
-1. Access the live version: [https://sunnyoung22.github.io/metronome/]
+1. Access the live version: [https://sunnyoung22.github.io/metronome/index.html]
 2. Set your desired BPM using the slider
 3. Choose time signature
 4. Click the start button to start
