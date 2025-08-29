@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<title>💖 七夕/生日特别抽奖 💖</title>
+<title>💖 七夕与生日特别抽奖 💖</title>
 <style>
     body {
         margin: 0;
@@ -132,36 +132,27 @@
         margin: 8px 0;
         font-weight: bold;
         transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
+    /* Styles for the gift content (used in both modal and list) */
     .gift {
-        background: linear-gradient(135deg, #fff7e6, #fffbf0);
-        border: 2px solid #ffc107;
-        border-radius: 12px;
-        padding: 12px;
-        margin-top: 12px;
-        animation: giftAppear 1s ease-out;
         position: relative;
         overflow: hidden;
     }
     .gift.legendary {
-        background: linear-gradient(135deg, #ffebee, #fce4ec);
-        border-color: #e91e63;
-        box-shadow: 0 0 20px rgba(233, 30, 99, 0.3);
+        /* Special styles for legendary can still be used for text color etc. */
     }
-    .gift::before {
+    .gift::before { /* Shine animation for legendary */
         content: '';
         position: absolute;
         top: -2px;
         left: -100%;
         width: 100%;
         height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
         animation: shine 2s ease-in-out;
-    }
-    @keyframes giftAppear {
-        0% { opacity: 0; transform: scale(0.5) translateY(30px) rotate(-10deg); }
-        60% { transform: scale(1.1) translateY(-10px) rotate(5deg); }
-        100% { opacity: 1; transform: scale(1) translateY(0) rotate(0deg); }
     }
     @keyframes shine {
         0% { left: -100%; }
@@ -171,11 +162,11 @@
         font-weight: bold; 
         color:#d84315; 
         margin-bottom: 6px;
-        font-size: 1em;
+        font-size: 1.2em;
     }
     .gift.legendary .gift-name {
         color: #c62828;
-        font-size: 1.1em;
+        font-size: 1.3em;
     }
     .gift-desc {
         color: #666;
@@ -265,6 +256,55 @@
         margin-top: 6px;
         font-style: italic;
     }
+
+    /* --- 新增的弹窗样式 --- */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        display: none; /* 默认隐藏 */
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+        padding: 15px;
+        box-sizing: border-box;
+        backdrop-filter: blur(4px);
+    }
+    .modal-overlay.show {
+        display: flex; /* 显示弹窗 */
+    }
+    .modal-content {
+        background: #fff;
+        border-radius: 16px;
+        padding: 24px;
+        width: 100%;
+        max-width: 360px;
+        position: relative;
+        animation: modal-appear 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    @keyframes modal-appear {
+        from { transform: scale(0.7) rotate(-15deg); opacity: 0; }
+        to { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+    .modal-close {
+        position: absolute;
+        top: 8px;
+        right: 12px;
+        background: transparent;
+        border: none;
+        font-size: 28px;
+        color: #aaa;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    .modal-close:hover {
+        color: #333;
+    }
 </style>
 </head>
 <body>
@@ -301,17 +341,26 @@
         <div class="progress-text" id="progressText">0/5 礼物</div>
     </div>
     <div class="collected-list" id="collected"></div>
-    <div id="giftBox"></div>
     <div id="doneBox"></div>
+</div>
+
+<!-- 新增的弹窗 HTML 结构 -->
+<div class="modal-overlay" id="giftModal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+        <div id="modalBody">
+            <!-- 礼物内容将通过 JS 注入这里 -->
+        </div>
+    </div>
 </div>
 
 <script>
 // 按照你要求的顺序：普通-稀有-普通-史诗-传说
 const gifts = [
-    {name:"MAC聚光瓶粉底液 N18", desc:"💄 完美妆容的第一步", tier:"normal"},
+    {name:"MAC聚光瓶粉底液 N18", desc:"💄 完美妆容第一步", tier:"normal"},
     {name:"达芙妮黑色法式单鞋", desc:"👠 优雅搭配旗袍", tier:"rare"},
     {name:"MAC聚光瓶粉底液 NC14.5", desc:"✨ 自然透亮肌肤", tier:"normal"}, 
-    {name:"星之卡比wii豪华版", desc:"🎮 重温童年美好", tier:"epic"},
+    {name:"星之卡比wii豪华版", desc:"🎮 感受童趣与美好", tier:"epic"},
     {name:"任天堂 Switch OLED", desc:"🎯 终极游戏体验！一起创造回忆", tier:"legendary"}
 ];
 
@@ -435,48 +484,31 @@ function roll(){
         document.getElementById("d1").textContent = d1;
         document.getElementById("d2").textContent = d2;
         
-function updateStats() {
-    document.getElementById("rollCount").textContent = rolls;
-    document.getElementById("giftCount").textContent = collected.length;
-    document.getElementById("progressText").textContent = `${collected.length}/5 礼物`;
-}
-        
         if (winCheck.should && winNumbers.includes(sum) && !usedNumbers.includes(sum)) {
             usedNumbers.push(sum);
             let giftIndex = giftMapping[sum];
             let gift = gifts[giftIndex];
             collected.push(gift);
             
-            // 先更新统计数据
+            // 修复BUG：在礼物被收集后，立刻更新统计数据
             updateStats();
             
-            // 根据礼物等级显示不同的中奖信息
-            let message = "";
-            switch(gift.tier) {
-                case "normal":
-                    message = `💎 投出${sum}点中奖！获得${getTierName(gift.tier)}礼物！`;
-                    break;
-                case "rare":
-                    message = `🌟 投出${sum}点中奖！哇！${getTierName(gift.tier)}礼物！`;
-                    break;
-                case "epic":
-                    message = `⚡ 投出${sum}点中奖！天哪！${getTierName(gift.tier)}级礼物！！`;
-                    break;
-                case "legendary":
-                    message = `👑 投出${sum}点中奖！！！${getTierName(gift.tier)}大奖！！！`;
-                    break;
-            }
+            let message = `🎉 <strong>中奖啦！</strong>投出${sum}点，快看你获得了什么！`;
             document.getElementById("result").innerHTML = message;
             
-            showGift(gift);
+            showGiftModal(gift); // <-- 调用新的弹窗函数
             updateList();
             updateWinNumbersDisplay();
         } else {
+            // 未中奖时也要更新统计数据（主要是为了更新投掷次数）
+            updateStats();
             let encouragement = getEncouragement();
             document.getElementById("result").innerHTML = `😊 投出${sum}点，${encouragement}`;
         }
         
-        document.getElementById("rollBtn").disabled = false;
+        if (collected.length < gifts.length) {
+            document.getElementById("rollBtn").disabled = false;
+        }
     }, 1000);
 }
 
@@ -488,8 +520,11 @@ function getEncouragement() {
     return messages[Math.floor(Math.random() * messages.length)];
 }
 
-function showGift(gift) {
-    let box = document.getElementById("giftBox");
+// --- 新的弹窗函数 ---
+function showGiftModal(gift) {
+    let modalOverlay = document.getElementById("giftModal");
+    let modalBody = document.getElementById("modalBody");
+    
     let tierClass = getTierClass(gift.tier);
     let tierName = getTierName(gift.tier);
     let tierIcon = getTierIcon(gift.tier);
@@ -498,12 +533,13 @@ function showGift(gift) {
     let specialContent = "";
     if (gift.tier === 'legendary') {
         specialContent = `
-            <div class="special-message">🎊 恭喜！七夕生日双重惊喜！ 🎊</div>
+            <div class="special-message">🎊 恭喜！七夕/生日双重惊喜！ 🎊</div>
             <div class="special-message">这是为你准备的终极礼物 💖</div>
         `;
     }
     
-    box.innerHTML = `
+    // 在弹窗中生成礼物信息
+    modalBody.innerHTML = `
         <div class="${giftClass}">
             <div class="gift-name">
                 🎁 ${gift.name} 
@@ -513,18 +549,34 @@ function showGift(gift) {
             ${specialContent}
         </div>
     `;
+    
+    modalOverlay.classList.add("show"); // 显示弹窗
 }
+
+// --- 关闭弹窗的函数 ---
+function closeModal() {
+    document.getElementById("giftModal").classList.remove("show");
+}
+
+// 点击弹窗外部区域也可以关闭
+document.getElementById('giftModal').addEventListener('click', function(event) {
+    if (event.target === this) {
+        closeModal();
+    }
+});
+
 
 function updateStats() {
     document.getElementById("rollCount").textContent = rolls;
     document.getElementById("giftCount").textContent = collected.length;
+    document.getElementById("progress").style.width = (collected.length / gifts.length * 100) + "%";
     document.getElementById("progressText").textContent = `${collected.length}/5 礼物`;
 }
 
 function updateList() {
     let list = document.getElementById("collected");
     
-    // 显示最新获得的礼物
+    // 只添加最新获得的礼物
     let latestGift = collected[collected.length - 1];
     let div = document.createElement("div");
     div.className = "collected-item";
@@ -539,10 +591,6 @@ function updateList() {
     `;
     list.appendChild(div);
     
-    // 更新进度条
-    let progress = (collected.length / gifts.length * 100);
-    document.getElementById("progress").style.width = progress + "%";
-    
     // 检查是否完成所有礼物
     if (collected.length === gifts.length) {
         document.getElementById("doneBox").innerHTML = `
@@ -550,7 +598,7 @@ function updateList() {
                 🎊 所有礼物收集完成！🎊<br>
                 <div style="font-size: 1.1em; margin: 8px 0;">七夕 & 生日快乐！💖</div>
                 <div class="special-message">
-                    历经${rolls}次投掷，终于集齐所有爱的礼物！
+                    // 历经${rolls}次投掷，终于集齐所有爱的礼物！
                     愿每个礼物都带给你满满的幸福 🥰
                 </div>
             </div>
@@ -614,3 +662,4 @@ window.onload = function() {
 </script>
 </body>
 </html>
+
