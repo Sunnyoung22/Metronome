@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<title>💖 七夕生日特别抽奖 💖</title>
+<title>💖 七夕/生日特别抽奖 💖</title>
 <style>
     body {
         margin: 0;
@@ -15,51 +15,53 @@
         min-height: 100vh;
     }
     .container {
-        width: 92%;
-        max-width: 400px;
+        width: 95%;
+        max-width: 380px;
         background: #fff;
         border-radius: 16px;
-        padding: 20px;
+        padding: 16px;
         text-align: center;
         box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        margin: 10px auto;
     }
     h1 {
-        font-size: 1.5em;
+        font-size: 1.3em;
         color: #e91e63;
-        margin-bottom: .3em;
+        margin: 0 0 8px 0;
     }
     .subtitle {
-        font-size: .9em;
+        font-size: .85em;
         color: #666;
-        margin-bottom: 1em;
+        margin-bottom: 12px;
     }
     .rules {
         background: #f8f9fa;
-        border: 2px solid #e9ecef;
-        border-radius: 12px;
-        padding: 12px;
-        margin-bottom: 1em;
-        font-size: 0.85em;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 8px;
+        margin-bottom: 12px;
+        font-size: 0.8em;
     }
     .rules-title {
         font-weight: bold;
         color: #495057;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
     }
     .win-numbers {
         display: flex;
         justify-content: center;
-        gap: 8px;
+        gap: 6px;
         flex-wrap: wrap;
     }
     .win-num {
         background: linear-gradient(45deg, #28a745, #20c997);
         color: white;
-        padding: 4px 8px;
-        border-radius: 8px;
+        padding: 3px 6px;
+        border-radius: 6px;
         font-weight: bold;
-        min-width: 24px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        min-width: 20px;
+        font-size: 0.9em;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
     .win-num.used {
         background: #6c757d;
@@ -68,20 +70,20 @@
     .dice-box {
         display: flex;
         justify-content: center;
-        gap: 15px;
-        margin: 1em 0;
+        gap: 12px;
+        margin: 12px 0;
     }
     .dice {
-        width: 60px;
-        height: 60px;
+        width: 50px;
+        height: 50px;
         background: linear-gradient(45deg,#ff6b6b,#ee5a24);
         color: #fff;
         font-weight: bold;
-        font-size: 1.8em;
+        font-size: 1.5em;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 12px;
+        border-radius: 10px;
         transition: transform 0.3s ease;
     }
     .dice.rolling {
@@ -96,14 +98,14 @@
     }
     .btn {
         width: 100%;
-        padding: 14px;
-        font-size: 1.1em;
+        padding: 12px;
+        font-size: 1em;
         border: none;
-        border-radius: 30px;
+        border-radius: 25px;
         background: linear-gradient(45deg,#e91e63,#f06292);
         color: #fff;
         font-weight: bold;
-        margin: 1em 0;
+        margin: 12px 0;
         cursor: pointer;
         transition: all 0.3s ease;
     }
@@ -120,23 +122,23 @@
     .stats {
         display: flex;
         justify-content: space-between;
-        margin: 1em 0;
-        font-size: 0.9em;
+        margin: 8px 0;
+        font-size: 0.85em;
         color: #666;
     }
     .result { 
-        min-height: 40px; 
-        font-size: 1em; 
-        margin: .5em 0;
+        min-height: 35px; 
+        font-size: 0.95em; 
+        margin: 8px 0;
         font-weight: bold;
         transition: all 0.3s ease;
     }
     .gift {
         background: linear-gradient(135deg, #fff7e6, #fffbf0);
-        border: 3px solid #ffc107;
-        border-radius: 15px;
-        padding: 18px;
-        margin-top: 1em;
+        border: 2px solid #ffc107;
+        border-radius: 12px;
+        padding: 12px;
+        margin-top: 12px;
         animation: giftAppear 1s ease-out;
         position: relative;
         overflow: hidden;
@@ -144,7 +146,7 @@
     .gift.legendary {
         background: linear-gradient(135deg, #ffebee, #fce4ec);
         border-color: #e91e63;
-        box-shadow: 0 0 25px rgba(233, 30, 99, 0.4);
+        box-shadow: 0 0 20px rgba(233, 30, 99, 0.3);
     }
     .gift::before {
         content: '';
@@ -168,29 +170,31 @@
     .gift-name { 
         font-weight: bold; 
         color:#d84315; 
-        margin-bottom: 8px;
-        font-size: 1.1em;
+        margin-bottom: 6px;
+        font-size: 1em;
     }
     .gift.legendary .gift-name {
         color: #c62828;
-        font-size: 1.2em;
+        font-size: 1.1em;
     }
     .gift-desc {
         color: #666;
-        font-size: 0.95em;
-        margin-bottom: 8px;
+        font-size: 0.9em;
+        margin-bottom: 6px;
     }
     .collected-list { 
         text-align:left; 
-        margin-top: 1em; 
-        font-size: .9em;
+        margin-top: 12px; 
+        font-size: .85em;
+        max-height: 200px;
+        overflow-y: auto;
     }
     .collected-item {
         background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
-        padding:10px 12px;
-        margin:6px 0;
-        border-radius: 10px;
-        border-left:4px solid #4caf50;
+        padding:6px 10px;
+        margin:4px 0;
+        border-radius: 8px;
+        border-left:3px solid #4caf50;
         color:#2e7d32;
         display: flex;
         justify-content: space-between;
@@ -216,10 +220,10 @@
         box-shadow: 0 2px 8px rgba(198, 40, 40, 0.3);
     }
     .progress { 
-        margin-top:1em; 
-        height:18px; 
+        margin-top:10px; 
+        height:14px; 
         background:#eee; 
-        border-radius:10px;
+        border-radius:8px;
         overflow: hidden;
         position: relative;
     }
@@ -227,7 +231,7 @@
         height:100%; 
         width:0%;
         background:linear-gradient(90deg,#4caf50,#8bc34a);
-        border-radius:10px;
+        border-radius:8px;
         transition: width 0.8s ease;
     }
     .progress-text {
@@ -235,16 +239,16 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        font-size: 0.8em;
+        font-size: 0.75em;
         font-weight: bold;
         color: #333;
         z-index: 1;
     }
     .done {
-        margin-top: 1em;
-        padding: 25px;
+        margin-top: 12px;
+        padding: 15px;
         background: linear-gradient(135deg,#ff9a9e,#fad0c4);
-        border-radius: 15px;
+        border-radius: 12px;
         font-weight:bold;
         color:#c62828;
         animation: celebration 1.2s ease-out;
@@ -256,9 +260,9 @@
         100% { transform: scale(1) rotate(0deg); opacity: 1; }
     }
     .special-message {
-        font-size: 0.9em;
+        font-size: 0.8em;
         color: #666;
-        margin-top: 8px;
+        margin-top: 6px;
         font-style: italic;
     }
 </style>
@@ -544,9 +548,9 @@ function updateList() {
         document.getElementById("doneBox").innerHTML = `
             <div class="done">
                 🎊 所有礼物收集完成！🎊<br>
-                <div style="font-size: 1.2em; margin: 10px 0;">七夕 & 生日快乐！💖</div>
+                <div style="font-size: 1.1em; margin: 8px 0;">七夕 & 生日快乐！💖</div>
                 <div class="special-message">
-                    历经${rolls}次投掷，终于集齐所有爱的礼物！<br>
+                    历经${rolls}次投掷，终于集齐所有爱的礼物！
                     愿每个礼物都带给你满满的幸福 🥰
                 </div>
             </div>
