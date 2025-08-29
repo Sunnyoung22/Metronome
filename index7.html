@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>💖 七夕生日特别抽奖 💖</title>
+<style>
+    body {
+        margin: 0;
+        font-family: "Microsoft YaHei", sans-serif;
+        background: linear-gradient(135deg,#ff9a9e,#fecfef);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+    .container {
+        width: 92%;
+        max-width: 400px;
+        background: #fff;
+        border-radius: 16px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    h1 {
+        font-size: 1.5em;
+        color: #e91e63;
+        margin-bottom: .3em;
+    }
+    .subtitle {
+        font-size: .9em;
+        color: #666;
+        margin-bottom: 1em;
+    }
+    .rules {
+        background: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 1em;
+        font-size: 0.85em;
+    }
+    .rules-title {
+        font-weight: bold;
+        color: #495057;
+        margin-bottom: 8px;
+    }
+    .win-numbers {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .win-num {
+        background: linear-gradient(45deg, #28a745, #20c997);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 8px;
+        font-weight: bold;
+        min-width: 24px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .win-num.used {
+        background: #6c757d;
+        opacity: 0.6;
+    }
+    .dice-box {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin: 1em 0;
+    }
+    .dice {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(45deg,#ff6b6b,#ee5a24);
+        color: #fff;
+        font-weight: bold;
+        font-size: 1.8em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        transition: transform 0.3s ease;
+    }
+    .dice.rolling {
+        animation: roll 0.8s ease-in-out;
+    }
+    @keyframes roll {
+        0% { transform: rotate(0deg) scale(1); }
+        25% { transform: rotate(90deg) scale(1.1); }
+        50% { transform: rotate(180deg) scale(1); }
+        75% { transform: rotate(270deg) scale(1.1); }
+        100% { transform: rotate(360deg) scale(1); }
+    }
+    .btn {
+        width: 100%;
+        padding: 14px;
+        font-size: 1.1em;
+        border: none;
+        border-radius: 30px;
+        background: linear-gradient(45deg,#e91e63,#f06292);
+        color: #fff;
+        font-weight: bold;
+        margin: 1em 0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .btn:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(233, 30, 99, 0.3);
+    }
+    .btn:disabled { 
+        background:#ccc; 
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+    .stats {
+        display: flex;
+        justify-content: space-between;
+        margin: 1em 0;
+        font-size: 0.9em;
+        color: #666;
+    }
+    .result { 
+        min-height: 40px; 
+        font-size: 1em; 
+        margin: .5em 0;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+    .gift {
+        background: linear-gradient(135deg, #fff7e6, #fffbf0);
+        border: 3px solid #ffc107;
+        border-radius: 15px;
+        padding: 18px;
+        margin-top: 1em;
+        animation: giftAppear 1s ease-out;
+        position: relative;
+        overflow: hidden;
+    }
+    .gift.legendary {
+        background: linear-gradient(135deg, #ffebee, #fce4ec);
+        border-color: #e91e63;
+        box-shadow: 0 0 25px rgba(233, 30, 99, 0.4);
+    }
+    .gift::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+        animation: shine 2s ease-in-out;
+    }
+    @keyframes giftAppear {
+        0% { opacity: 0; transform: scale(0.5) translateY(30px) rotate(-10deg); }
+        60% { transform: scale(1.1) translateY(-10px) rotate(5deg); }
+        100% { opacity: 1; transform: scale(1) translateY(0) rotate(0deg); }
+    }
+    @keyframes shine {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+    .gift-name { 
+        font-weight: bold; 
+        color:#d84315; 
+        margin-bottom: 8px;
+        font-size: 1.1em;
+    }
+    .gift.legendary .gift-name {
+        color: #c62828;
+        font-size: 1.2em;
+    }
+    .gift-desc {
+        color: #666;
+        font-size: 0.95em;
+        margin-bottom: 8px;
+    }
+    .collected-list { 
+        text-align:left; 
+        margin-top: 1em; 
+        font-size: .9em;
+    }
+    .collected-item {
+        background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
+        padding:10px 12px;
+        margin:6px 0;
+        border-radius: 10px;
+        border-left:4px solid #4caf50;
+        color:#2e7d32;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        animation: itemAppear 0.5s ease-out;
+    }
+    @keyframes itemAppear {
+        0% { opacity: 0; transform: translateX(-20px); }
+        100% { opacity: 1; transform: translateX(0); }
+    }
+    .gift-tier {
+        font-size: 0.75em;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-weight: bold;
+    }
+    .tier-normal { background: #e3f2fd; color: #1976d2; }
+    .tier-rare { background: #f3e5f5; color: #7b1fa2; }
+    .tier-epic { background: #fff3e0; color: #f57c00; }
+    .tier-legendary { 
+        background: linear-gradient(45deg, #ffcdd2, #f8bbd9); 
+        color: #c62828; 
+        box-shadow: 0 2px 8px rgba(198, 40, 40, 0.3);
+    }
+    .progress { 
+        margin-top:1em; 
+        height:18px; 
+        background:#eee; 
+        border-radius:10px;
+        overflow: hidden;
+        position: relative;
+    }
+    .progress-fill {
+        height:100%; 
+        width:0%;
+        background:linear-gradient(90deg,#4caf50,#8bc34a);
+        border-radius:10px;
+        transition: width 0.8s ease;
+    }
+    .progress-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 0.8em;
+        font-weight: bold;
+        color: #333;
+        z-index: 1;
+    }
+    .done {
+        margin-top: 1em;
+        padding: 25px;
+        background: linear-gradient(135deg,#ff9a9e,#fad0c4);
+        border-radius: 15px;
+        font-weight:bold;
+        color:#c62828;
+        animation: celebration 1.2s ease-out;
+        border: 2px solid #e91e63;
+    }
+    @keyframes celebration {
+        0% { transform: scale(0.8) rotate(-5deg); opacity: 0; }
+        50% { transform: scale(1.1) rotate(2deg); }
+        100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+    .special-message {
+        font-size: 0.9em;
+        color: #666;
+        margin-top: 8px;
+        font-style: italic;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>🎲 蝶蝶的七夕/生日礼物抽奖 🎲</h1>
+    <p class="subtitle">投掷双骰子，解锁爱的礼物 💕</p>
+
+    <div class="rules">
+        <div class="rules-title">🎯 中奖点数</div>
+        <div class="win-numbers">
+            <div class="win-num" data-num="10">10</div>
+            <div class="win-num" data-num="8">8</div>
+            <div class="win-num" data-num="6">6</div>
+            <div class="win-num" data-num="9">9</div>
+            <div class="win-num" data-num="12">12</div>
+        </div>
+    </div>
+
+    <div class="dice-box">
+        <div class="dice" id="d1">?</div>
+        <div class="dice" id="d2">?</div>
+    </div>
+    
+    <div class="stats">
+        <span>已投掷: <span id="rollCount">0</span> 次</span>
+        <span>收集: <span id="giftCount">0</span>/5</span>
+    </div>
+    
+    <button class="btn" id="rollBtn" onclick="roll()">🎲 投骰子</button>
+    <div class="result" id="result">点击开始投掷！</div>
+
+    <div class="progress">
+        <div class="progress-fill" id="progress"></div>
+        <div class="progress-text" id="progressText">0/5 礼物</div>
+    </div>
+    <div class="collected-list" id="collected"></div>
+    <div id="giftBox"></div>
+    <div id="doneBox"></div>
+</div>
+
+<script>
+// 按照你要求的顺序：普通-稀有-普通-史诗-传说
+const gifts = [
+    {name:"MAC聚光瓶粉底液 N18", desc:"💄 完美妆容的第一步", tier:"normal"},
+    {name:"达芙妮黑色法式单鞋", desc:"👠 优雅搭配旗袍", tier:"rare"},
+    {name:"MAC聚光瓶粉底液 NC14.5", desc:"✨ 自然透亮肌肤", tier:"normal"}, 
+    {name:"星之卡比wii豪华版", desc:"🎮 重温童年美好", tier:"epic"},
+    {name:"任天堂 Switch OLED", desc:"🎯 终极游戏体验！一起创造回忆", tier:"legendary"}
+];
+
+// 中奖点数和对应的礼物索引
+const winNumbers = [6, 8, 9, 10, 12];
+const giftMapping = {
+    8: 0,   // 8点 -> 第1个礼物
+    9: 1,   // 9点 -> 第2个礼物  
+    6: 2,   // 6点 -> 第3个礼物
+    10: 3,  // 10点 -> 第4个礼物
+    12: 4   // 12点 -> 第5个礼物（大奖）
+};
+
+// 精心设计的获奖时机
+const winTiming = [
+    {targetRoll: 4, winNumber: 8},   // 第4次：8点
+    {targetRoll: 9, winNumber: 9},   // 第9次：9点  
+    {targetRoll: 15, winNumber: 6},  // 第15次：6点
+    {targetRoll: 22, winNumber: 10}, // 第22次：10点
+    {targetRoll: 27, winNumber: 12}  // 第27次：12点（大奖）
+];
+
+let collected = [];
+let rolls = 0;
+let usedNumbers = [];
+
+function getTierClass(tier) {
+    return `tier-${tier}`;
+}
+
+function getTierName(tier) {
+    const names = {
+        normal: "普通",
+        rare: "稀有", 
+        epic: "史诗",
+        legendary: "传说"
+    };
+    return names[tier] || "普通";
+}
+
+function getTierIcon(tier) {
+    const icons = {
+        normal: "💎",
+        rare: "🌟", 
+        epic: "⚡",
+        legendary: "👑"
+    };
+    return icons[tier] || "💎";
+}
+
+function updateWinNumbersDisplay() {
+    // 更新中奖点数的显示状态
+    document.querySelectorAll('.win-num').forEach(el => {
+        let num = parseInt(el.dataset.num);
+        if (usedNumbers.includes(num)) {
+            el.classList.add('used');
+        }
+    });
+}
+
+function shouldWinThisRoll() {
+    // 检查是否到了获奖时机
+    let nextWin = winTiming[collected.length];
+    if (!nextWin) return {should: false, number: null};
+    
+    return {
+        should: rolls >= nextWin.targetRoll,
+        number: nextWin.winNumber
+    };
+}
+
+function getDiceForSum(targetSum) {
+    // 为目标点数生成合理的骰子组合
+    const combinations = {
+        6: [[1,5], [2,4], [3,3]],
+        8: [[2,6], [3,5], [4,4]],
+        9: [[3,6], [4,5]],
+        10: [[4,6], [5,5]],
+        12: [[6,6]]
+    };
+    
+    let options = combinations[targetSum] || [[1,1]];
+    let chosen = options[Math.floor(Math.random() * options.length)];
+    
+    // 随机决定骰子顺序
+    if (Math.random() < 0.5) {
+        return [chosen[1], chosen[0]];
+    }
+    return chosen;
+}
+
+function roll(){
+    if(collected.length >= gifts.length) return;
+    
+    document.getElementById("rollBtn").disabled = true;
+    document.getElementById("d1").classList.add("rolling");
+    document.getElementById("d2").classList.add("rolling");
+    
+    rolls++;
+    
+    // 检查是否应该中奖
+    let winCheck = shouldWinThisRoll();
+    let d1, d2, sum;
+    
+    if (winCheck.should) {
+        // 强制中奖：生成目标点数的骰子组合
+        [d1, d2] = getDiceForSum(winCheck.number);
+        sum = winCheck.number;
+    } else {
+        // 正常随机，但避免意外中奖
+        do {
+            d1 = Math.floor(Math.random() * 6) + 1;
+            d2 = Math.floor(Math.random() * 6) + 1;
+            sum = d1 + d2;
+        } while (winNumbers.includes(sum) && !usedNumbers.includes(sum));
+    }
+    
+    setTimeout(() => {
+        document.getElementById("d1").classList.remove("rolling");
+        document.getElementById("d2").classList.remove("rolling");
+        document.getElementById("d1").textContent = d1;
+        document.getElementById("d2").textContent = d2;
+        
+function updateStats() {
+    document.getElementById("rollCount").textContent = rolls;
+    document.getElementById("giftCount").textContent = collected.length;
+    document.getElementById("progressText").textContent = `${collected.length}/5 礼物`;
+}
+        
+        if (winCheck.should && winNumbers.includes(sum) && !usedNumbers.includes(sum)) {
+            usedNumbers.push(sum);
+            let giftIndex = giftMapping[sum];
+            let gift = gifts[giftIndex];
+            collected.push(gift);
+            
+            // 先更新统计数据
+            updateStats();
+            
+            // 根据礼物等级显示不同的中奖信息
+            let message = "";
+            switch(gift.tier) {
+                case "normal":
+                    message = `💎 投出${sum}点中奖！获得${getTierName(gift.tier)}礼物！`;
+                    break;
+                case "rare":
+                    message = `🌟 投出${sum}点中奖！哇！${getTierName(gift.tier)}礼物！`;
+                    break;
+                case "epic":
+                    message = `⚡ 投出${sum}点中奖！天哪！${getTierName(gift.tier)}级礼物！！`;
+                    break;
+                case "legendary":
+                    message = `👑 投出${sum}点中奖！！！${getTierName(gift.tier)}大奖！！！`;
+                    break;
+            }
+            document.getElementById("result").innerHTML = message;
+            
+            showGift(gift);
+            updateList();
+            updateWinNumbersDisplay();
+        } else {
+            let encouragement = getEncouragement();
+            document.getElementById("result").innerHTML = `😊 投出${sum}点，${encouragement}`;
+        }
+        
+        document.getElementById("rollBtn").disabled = false;
+    }, 1000);
+}
+
+function getEncouragement() {
+    const messages = [
+        "继续加油~", "再试一次~", "好运在路上~", 
+        "相信你的运气~", "坚持就是胜利~", "下次一定中~"
+    ];
+    return messages[Math.floor(Math.random() * messages.length)];
+}
+
+function showGift(gift) {
+    let box = document.getElementById("giftBox");
+    let tierClass = getTierClass(gift.tier);
+    let tierName = getTierName(gift.tier);
+    let tierIcon = getTierIcon(gift.tier);
+    let giftClass = gift.tier === 'legendary' ? 'gift legendary' : 'gift';
+    
+    let specialContent = "";
+    if (gift.tier === 'legendary') {
+        specialContent = `
+            <div class="special-message">🎊 恭喜！七夕生日双重惊喜！ 🎊</div>
+            <div class="special-message">这是为你准备的终极礼物 💖</div>
+        `;
+    }
+    
+    box.innerHTML = `
+        <div class="${giftClass}">
+            <div class="gift-name">
+                🎁 ${gift.name} 
+                <span class="gift-tier ${tierClass}">${tierIcon} ${tierName}</span>
+            </div>
+            <div class="gift-desc">${gift.desc}</div>
+            ${specialContent}
+        </div>
+    `;
+}
+
+function updateStats() {
+    document.getElementById("rollCount").textContent = rolls;
+    document.getElementById("giftCount").textContent = collected.length;
+    document.getElementById("progressText").textContent = `${collected.length}/5 礼物`;
+}
+
+function updateList() {
+    let list = document.getElementById("collected");
+    
+    // 显示最新获得的礼物
+    let latestGift = collected[collected.length - 1];
+    let div = document.createElement("div");
+    div.className = "collected-item";
+    
+    let tierClass = getTierClass(latestGift.tier);
+    let tierName = getTierName(latestGift.tier);
+    let tierIcon = getTierIcon(latestGift.tier);
+    
+    div.innerHTML = `
+        <span>${collected.length}. ${latestGift.name}</span>
+        <span class="gift-tier ${tierClass}">${tierIcon} ${tierName}</span>
+    `;
+    list.appendChild(div);
+    
+    // 更新进度条
+    let progress = (collected.length / gifts.length * 100);
+    document.getElementById("progress").style.width = progress + "%";
+    
+    // 检查是否完成所有礼物
+    if (collected.length === gifts.length) {
+        document.getElementById("doneBox").innerHTML = `
+            <div class="done">
+                🎊 所有礼物收集完成！🎊<br>
+                <div style="font-size: 1.2em; margin: 10px 0;">七夕 & 生日快乐！💖</div>
+                <div class="special-message">
+                    历经${rolls}次投掷，终于集齐所有爱的礼物！<br>
+                    愿每个礼物都带给你满满的幸福 🥰
+                </div>
+            </div>
+        `;
+        document.getElementById("rollBtn").disabled = true;
+        
+        // 庆祝烟花效果
+        setTimeout(() => {
+            createFireworks();
+        }, 800);
+    }
+}
+
+function createFireworks() {
+    const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#e91e63'];
+    
+    for (let i = 0; i < 30; i++) {
+        setTimeout(() => {
+            let firework = document.createElement('div');
+            firework.style.cssText = `
+                position: fixed;
+                width: 8px;
+                height: 8px;
+                background: ${colors[Math.floor(Math.random() * colors.length)]};
+                border-radius: 50%;
+                left: ${Math.random() * window.innerWidth}px;
+                top: ${Math.random() * window.innerHeight}px;
+                animation: firework 1.5s ease-out forwards;
+                pointer-events: none;
+                z-index: 1000;
+                box-shadow: 0 0 10px currentColor;
+            `;
+            
+            let style = document.createElement('style');
+            style.textContent = `
+                @keyframes firework {
+                    0% { opacity: 1; transform: scale(0) rotate(0deg); }
+                    50% { opacity: 1; transform: scale(1.5) rotate(180deg); }
+                    100% { opacity: 0; transform: scale(0) rotate(360deg); }
+                }
+            `;
+            document.head.appendChild(style);
+            document.body.appendChild(firework);
+            
+            setTimeout(() => {
+                if (document.body.contains(firework)) {
+                    document.body.removeChild(firework);
+                }
+                if (document.head.contains(style)) {
+                    document.head.removeChild(style);
+                }
+            }, 1500);
+        }, i * 80);
+    }
+}
+
+// 页面加载时显示欢迎信息
+window.onload = function() {
+    document.getElementById("result").innerHTML = "准备好开始这场爱的抽奖了吗？💕";
+}
+</script>
+</body>
+</html>
