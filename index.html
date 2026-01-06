@@ -11,6 +11,7 @@
             --primary-color: #3498db;
             --primary-darker: #2980b9;
             --primary-hover: #4ea8e1;
+            --primary-gradient: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
             --secondary-color: #ecf0f1;
             --secondary-darker: #dbe0e2;
             --text-dark: #2c3e50;
@@ -37,6 +38,10 @@
             --accent-beat-mute-bg: #fafafa;
             --accent-beat-mute-text: var(--text-lightest);
             --accent-beat-mute-border: #eee;
+            
+            /* Subdivision colors */
+            --subdivision-color: #e74c3c;
+            --subdivision-light: rgba(231, 76, 60, 0.3);
 
             --border-radius-small: 4px;
             --border-radius-medium: 8px;
@@ -44,11 +49,11 @@
             --font-family-main: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 
             /* --- COMPACT LAYOUT SPACING --- */
-            --gap-container: 10px;  /* Reduced from 12px */
-            --gap-section: 10px;    /* Reduced from 12px */
-            --gap-group: 8px;       /* Reduced from 10px */
-            --gap-row: 8px;         /* Reduced from 10px */
-            --gap-controls: 5px;    /* Reduced from 6px */
+            --gap-container: 10px;
+            --gap-section: 10px;
+            --gap-group: 8px;
+            --gap-row: 8px;
+            --gap-controls: 5px;
         }
 
         /* --- Dark Theme --- */
@@ -56,6 +61,7 @@
             --primary-color: #3fa5f3;
             --primary-darker: #2980b9;
             --primary-hover: #5bb2f5;
+            --primary-gradient: linear-gradient(135deg, #3fa5f3 0%, #2980b9 100%);
             --secondary-color: #3a3f44;
             --secondary-darker: #4a5056;
             --text-dark: #e8eaed;
@@ -81,6 +87,9 @@
             --accent-beat-mute-bg: #222;
             --accent-beat-mute-text: var(--text-lightest);
             --accent-beat-mute-border: #333;
+            
+            --subdivision-color: #e74c3c;
+            --subdivision-light: rgba(231, 76, 60, 0.4);
         }
 
         /* Base Styles & Typography */
@@ -90,7 +99,7 @@
             font-family: var(--font-family-main);
             color: var(--text-dark);
             background-color: var(--background-light);
-            line-height: 1.4; /* Reduced line-height slightly */
+            line-height: 1.4;
             padding: 12px 8px;
             max-width: 100%; overflow-x: hidden;
             touch-action: manipulation; -webkit-tap-highlight-color: transparent;
@@ -102,15 +111,15 @@
             background-color: var(--background-card);
             border-radius: var(--border-radius-large);
             box-shadow: 0 4px 15px var(--shadow-color);
-            padding: 12px 14px; /* Reduced vertical padding */
+            padding: 12px 14px;
             gap: var(--gap-container);
             transition: background-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         /* Header & Theme Toggle */
-        .header { text-align: center; margin-bottom: -4px; /* Adjusted margin */ position: relative; }
+        .header { text-align: center; margin-bottom: -4px; position: relative; }
         h1 { font-size: 18px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 2px; color: var(--text-medium); }
-        .subtitle { font-size: 11px; font-style: italic; color: var(--text-light); line-height: 1.2; } /* Reduced line-height */
+        .subtitle { font-size: 11px; font-style: italic; color: var(--text-light); line-height: 1.2; }
         .subtitle + .subtitle { margin-top: -2px; }
         .theme-toggle-btn { position: absolute; top: -4px; right: -2px; width: 32px; height: 32px; background-color: var(--theme-toggle-bg); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; transition: background-color 0.2s ease; }
         .theme-toggle-btn:hover { background-color: var(--secondary-darker); }
@@ -119,22 +128,119 @@
         [data-theme='dark'] .theme-toggle-btn .moon { display: block; }
         [data-theme='dark'] .theme-toggle-btn .sun { display: none; }
 
-        /* Beat Visualizer -- Made more compact */
+        /* Beat Visualizer - Enhanced with pendulum animation */
         .beat-display { display: flex; flex-direction: column; align-items: center; padding: 0; }
+        
+        /* Pendulum Container */
+        .pendulum-container {
+            width: 100%;
+            height: 60px;
+            position: relative;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+        .pendulum-track {
+            position: absolute;
+            top: 50%;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--secondary-color) 0%, var(--primary-color) 50%, var(--secondary-color) 100%);
+            border-radius: 2px;
+            transform: translateY(-50%);
+        }
+        .pendulum-ball {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            top: 50%;
+            left: 10%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 2px 8px var(--shadow-active-color);
+            transition: left 0.1s linear;
+        }
+        .pendulum-ball.active {
+            transform: translate(-50%, -50%) scale(1.2);
+            box-shadow: 0 0 15px var(--shadow-active-color);
+        }
+        
+        /* Beat dots row */
+        .beat-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .beat-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            border: 2px solid var(--border-color);
+            transition: all 0.1s ease-out;
+        }
+        .beat-dot.active {
+            background-color: var(--primary-color);
+            border-color: var(--primary-darker);
+            transform: scale(1.2);
+            box-shadow: 0 0 8px var(--shadow-active-color);
+        }
+        .beat-dot.accent {
+            border-color: var(--primary-color);
+        }
+        .beat-dot.muted {
+            opacity: 0.4;
+        }
+        .beat-dot.subdivision {
+            width: 8px;
+            height: 8px;
+            background-color: var(--subdivision-light);
+            border: 1px solid var(--subdivision-color);
+        }
+        .beat-dot.subdivision.active {
+            background-color: var(--subdivision-color);
+            transform: scale(1.3);
+        }
+        
         .visual-beat {
-            width: 55px; height: 55px; /* Reduced size */
+            width: 55px; height: 55px;
             background-color: var(--secondary-color); border-radius: 50%;
             transition: transform 0.1s ease-out, background-color 0.1s, box-shadow 0.1s;
             display: flex; align-items: center; justify-content: center;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
-            margin-bottom: 8px; /* Reduced margin */
+            margin-bottom: 8px;
             color: var(--white); font-weight: 300;
         }
         .beat-active { background-color: var(--primary-color); transform: scale(1.08); box-shadow: 0 0 15px var(--shadow-active-color); }
         .beat-muted { background-color: var(--secondary-darker); opacity: 0.6; transform: scale(1.0); }
-        .beat-count { font-size: 26px; /* Reduced font size */ }
-        .tempo-display { font-size: 38px; /* Reduced font size */ font-weight: 300; color: var(--text-dark); margin: 0; }
-        .tempo-text { font-size: 13px; /* Reduced font size */ color: var(--text-light); font-style: italic; margin-top: -4px; /* Adjusted margin */ }
+        .beat-count { font-size: 26px; }
+        
+        /* Practice Timer Display */
+        .practice-timer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-lighter);
+            margin-bottom: 4px;
+        }
+        .practice-timer svg {
+            width: 14px;
+            height: 14px;
+            fill: var(--text-lighter);
+        }
+        .practice-timer.active {
+            color: var(--primary-color);
+        }
+        .practice-timer.active svg {
+            fill: var(--primary-color);
+        }
+        
+        .tempo-display { font-size: 38px; font-weight: 300; color: var(--text-dark); margin: 0; }
+        .tempo-text { font-size: 13px; color: var(--text-light); font-style: italic; margin-top: -4px; }
 
         /* Controls */
         .control-section { display: flex; flex-direction: column; gap: var(--gap-section); }
@@ -190,14 +296,55 @@
         .toggle-switch input:checked + .slider { background-color: var(--primary-color); }
         .toggle-switch input:focus + .slider { box-shadow: 0 0 1px var(--primary-color); }
         .toggle-switch input:checked + .slider:before { transform: translateX(18px); }
-        .accent-pattern-header, .practice-mode-header { display: flex; justify-content: flex-start; align-items: center; gap: 8px; margin-bottom: 3px; /* Reduced margin */ }
-        .accent-pattern-header label[for], .practice-mode-header label[for] { margin-bottom: 0; font-weight: 500; color: var(--text-medium); cursor: pointer; }
+        .accent-pattern-header, .practice-mode-header, .subdivision-header, .countin-header { display: flex; justify-content: flex-start; align-items: center; gap: 8px; margin-bottom: 3px; }
+        .accent-pattern-header label[for], .practice-mode-header label[for], .subdivision-header label[for], .countin-header label[for] { margin-bottom: 0; font-weight: 500; color: var(--text-medium); cursor: pointer; }
         .accent-pattern-container { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; overflow: hidden; max-height: 0; opacity: 0; transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin-top 0.3s ease-out; margin-top: 0; }
-        .accent-pattern-container.visible { max-height: 100px; opacity: 1; margin-top: 4px; /* Reduced margin */ }
+        .accent-pattern-container.visible { max-height: 100px; opacity: 1; margin-top: 4px; }
         .accent-beat-selector { width: 28px; height: 28px; border: 1px solid var(--accent-beat-border); border-radius: var(--border-radius-small); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; cursor: pointer; user-select: none; transition: background-color 0.15s, color 0.15s, border-color 0.15s; flex-shrink: 0; line-height: 1; }
         .accent-beat-selector.state-accent { background-color: var(--accent-beat-accent-bg); color: var(--accent-beat-accent-text); border-color: var(--accent-beat-accent-bg); }
         .accent-beat-selector.state-normal { background-color: var(--accent-beat-normal-bg); color: var(--accent-beat-normal-text); border-color: var(--accent-beat-border); }
         .accent-beat-selector.state-mute { background-color: var(--accent-beat-mute-bg); color: var(--accent-beat-mute-text); border-color: var(--accent-beat-mute-border); font-style: italic; }
+        
+        /* Subdivision Styles */
+        .subdivision-options { display: flex; gap: var(--gap-controls); overflow: hidden; max-height: 0; opacity: 0; transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin-top 0.3s ease-out; margin-top: 0; }
+        .subdivision-options.visible { max-height: 50px; opacity: 1; margin-top: 4px; }
+        .subdivision-option {
+            flex: 1; padding: 6px 4px;
+            text-align: center; border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-medium); background-color: transparent; font-size: 12px;
+            cursor: pointer; transition: all 0.2s; color: var(--text-medium);
+        }
+        .subdivision-option:hover { background-color: var(--secondary-color); border-color: var(--secondary-darker); }
+        .subdivision-option.active { background-color: var(--subdivision-color); color: var(--white); border-color: var(--subdivision-color); font-weight: 600; }
+        
+        /* Count-in indicator */
+        .countin-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .countin-indicator.visible {
+            opacity: 1;
+        }
+        
+        /* Tempo preset bookmark button */
+        .tempo-bookmark-btn {
+            padding: 4px 8px !important;
+            font-size: 14px !important;
+            min-width: 30px;
+            flex: 0 0 auto !important;
+        }
+        .tempo-bookmark-btn svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
 
         /* Enhanced Practice Mode Styles */
         .practice-controls { display: flex; flex-direction: column; gap: 8px; overflow: hidden; max-height: 0; opacity: 0; transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin-top 0.3s ease-out; margin-top: 0; }
@@ -334,8 +481,24 @@
         </div>
 
         <div class="beat-display">
+            <!-- Pendulum animation -->
+            <div class="pendulum-container">
+                <div class="pendulum-track"></div>
+                <div class="pendulum-ball" id="pendulumBall"></div>
+            </div>
+            
+            <!-- Beat dots showing the measure -->
+            <div class="beat-dots" id="beatDots"></div>
+            
+            <!-- Practice timer -->
+            <div class="practice-timer" id="practiceTimer">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                <span id="practiceTimerText">00:00</span>
+            </div>
+            
             <div class="visual-beat" id="visualBeat">
                 <span class="beat-count" id="beatCount"></span>
+                <span class="countin-indicator" id="countinIndicator"></span>
             </div>
             <div class="tempo-display" id="tempoDisplay">80</div>
             <div class="tempo-text" id="tempoText">Adagio</div>
@@ -409,6 +572,34 @@
                     <label for="accentPatternToggle" data-i18n-key="accentLabel">Accent Pattern (A/N/M)</label>
                 </div>
                 <div class="accent-pattern-container" id="accentPatternContainer"></div>
+            </div>
+            
+            <!-- Subdivision Control - New Feature -->
+            <div class="control-group subdivision-section">
+                <div class="subdivision-header">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="subdivisionToggle">
+                        <span class="slider"></span>
+                    </label>
+                    <label for="subdivisionToggle" data-i18n-key="subdivisionLabel">Subdivision</label>
+                </div>
+                <div class="subdivision-options" id="subdivisionOptions">
+                    <div class="subdivision-option active" data-subdivision="1" data-i18n-key="subNone">♩ None</div>
+                    <div class="subdivision-option" data-subdivision="2" data-i18n-key="subEighth">♪♪ Eighth</div>
+                    <div class="subdivision-option" data-subdivision="3" data-i18n-key="subTriplet">♪♪♪ Triplet</div>
+                    <div class="subdivision-option" data-subdivision="4" data-i18n-key="subSixteenth">♬ 16th</div>
+                </div>
+            </div>
+            
+            <!-- Count-in Control - New Feature -->
+            <div class="control-group countin-section">
+                <div class="countin-header">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="countinToggle">
+                        <span class="slider"></span>
+                    </label>
+                    <label for="countinToggle" data-i18n-key="countinLabel">Count-in (1 measure)</label>
+                </div>
             </div>
 
             <div class="control-group practice-mode-section">
@@ -508,6 +699,12 @@
             soundDigital: { en: "Digital", zh: "电子" },
             volumeLabel: { en: "Volume", zh: "音量" },
             accentLabel: { en: "Accent Pattern (A/N/M)", zh: "重音模式 (重/普/静)" },
+            subdivisionLabel: { en: "Subdivision", zh: "细分" },
+            subNone: { en: "♩ None", zh: "♩ 无" },
+            subEighth: { en: "♪♪ Eighth", zh: "♪♪ 八分" },
+            subTriplet: { en: "♪♪♪ Triplet", zh: "♪♪♪ 三连音" },
+            subSixteenth: { en: "♬ 16th", zh: "♬ 十六分" },
+            countinLabel: { en: "Count-in (1 measure)", zh: "预备拍 (1小节)" },
             practiceLabel: { en: "Auto Tempo / Practice", zh: "自动速度/练习" },
             practiceMode: { en: "Mode", zh: "模式" },
             practiceModeTempo: { en: "Auto Tempo Increase/Decrease", zh: "自动速度递增/减" },
@@ -525,7 +722,7 @@
             sponsorBtn: { en: "Sponsor", zh: "请我喝杯咖啡" },
             sponsorTitle: { en: "Support the Developer", zh: "支持开发者" },
             sponsorDesc: { en: "If you find this metronome helpful, consider buying me a coffee!", zh: "如果这个节拍器对您有帮助，可以考虑请我喝杯咖啡！" },
-            keyboardShortcut: { en: "Space: Start/Stop, T: Tap, 1-3: Sound, Arrows: Tempo", zh: "空格:开始/暂停, T:打拍, 1-3:音色, 方向键:速度" }
+            keyboardShortcut: { en: "Space: Start/Stop, T: Tap, 1-4: Sound/Sub, Arrows: Tempo", zh: "空格:开始/暂停, T:打拍, 1-4:音色/细分, 方向键:速度" }
         };
 
         const tempoNameMap = {
@@ -582,6 +779,16 @@
             langToggleButton: document.getElementById('langToggleBtn'),
             sponsorBtn: document.getElementById('sponsorBtn'),
             sponsorModal: document.getElementById('sponsorModal'),
+            // New elements
+            pendulumBall: document.getElementById('pendulumBall'),
+            beatDots: document.getElementById('beatDots'),
+            practiceTimer: document.getElementById('practiceTimer'),
+            practiceTimerText: document.getElementById('practiceTimerText'),
+            subdivisionToggle: document.getElementById('subdivisionToggle'),
+            subdivisionOptions: document.getElementById('subdivisionOptions'),
+            subdivisionOptionBtns: document.querySelectorAll('.subdivision-option'),
+            countinToggle: document.getElementById('countinToggle'),
+            countinIndicator: document.getElementById('countinIndicator'),
         };
 
         // --- Audio & Sound ---
@@ -600,6 +807,7 @@
         let tempo = 80;
         let beatsPerMeasure = 4;
         let currentBeatInMeasure = 0;
+        let currentSubdivision = 0; // New: track subdivision within beat
         let nextNoteTime = 0.0;
         let schedulerTimerID = null;
         let accentPattern = [];
@@ -607,6 +815,18 @@
         let lastTapTime = 0;
         let practiceInitialTempo = 80;
         let currentLang = 'zh'; // Default language
+        let subdivision = 1; // 1=none, 2=eighth, 3=triplet, 4=sixteenth
+        let countinEnabled = false;
+        let isCountingIn = false;
+        let countinBeatsRemaining = 0;
+        
+        // Practice timer
+        let practiceStartTime = null;
+        let practiceTimerInterval = null;
+        
+        // Pendulum animation
+        let pendulumDirection = 1; // 1 = right, -1 = left
+        let pendulumPosition = 10; // percentage (10% to 90%)
 
         let practice = {
             isActive: false,
@@ -691,6 +911,10 @@
                 practiceInterval: parseInt(dom.practiceInterval.value, 10),
                 practicePlayMeasures: parseInt(dom.practicePlayMeasures.value, 10),
                 practiceMuteMeasures: parseInt(dom.practiceMuteMeasures.value, 10),
+                // New settings
+                subdivision: subdivision,
+                isSubdivisionVisible: dom.subdivisionToggle.checked,
+                countinEnabled: dom.countinToggle.checked,
             };
             try { localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(settings)); }
             catch (e) { console.error("Error saving settings:", e); }
@@ -724,11 +948,20 @@
             dom.practiceInterval.value = settings.practiceInterval || 8;
             dom.practicePlayMeasures.value = settings.practicePlayMeasures || 3;
             dom.practiceMuteMeasures.value = settings.practiceMuteMeasures || 1;
+            
+            // Load new settings
+            subdivision = settings.subdivision || 1;
+            changeSubdivision(subdivision, true);
+            dom.subdivisionToggle.checked = settings.isSubdivisionVisible || false;
+            setSubdivisionVisible(dom.subdivisionToggle.checked);
+            dom.countinToggle.checked = settings.countinEnabled || false;
+            countinEnabled = dom.countinToggle.checked;
 
             updateAccentPatternUI(settings.accentPattern);
             setAccentPatternVisible(dom.accentPatternToggle.checked);
             setPracticeModeActive(dom.practiceModeToggle.checked);
             updatePracticeModeUI();
+            updateBeatDotsUI();
 
             if (masterGainNode) masterGainNode.gain.setValueAtTime(parseFloat(dom.volumeSlider.value), audioContext.currentTime);
             return true;
@@ -745,11 +978,19 @@
             } catch (e) { console.error("Web Audio API Error", e); }
         }
 
-        function playSound(time, beatType) {
+        function playSound(time, beatType, isSubdivisionClick = false) {
             if (!audioContext || !masterGainNode) return;
             const soundSet = soundTypes[currentSoundType];
             if (!soundSet[beatType]) return;
-            const { freq, gain, decay, type } = soundSet[beatType];
+            let { freq, gain, decay, type } = soundSet[beatType];
+            
+            // Subdivision clicks are quieter and higher pitched
+            if (isSubdivisionClick) {
+                freq = freq * 1.5;
+                gain = gain * 0.4;
+                decay = decay * 0.6;
+            }
+            
             const osc = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
             osc.connect(gainNode); gainNode.connect(masterGainNode);
@@ -759,10 +1000,62 @@
             gainNode.gain.exponentialRampToValueAtTime(0.001, time + decay);
             osc.start(time); osc.stop(time + decay + 0.02);
         }
+        
+        // Schedule subdivision sounds for a beat
+        function scheduleSubdivisions(beatTime, beatDuration) {
+            if (subdivision <= 1) return;
+            
+            const subDuration = beatDuration / subdivision;
+            for (let i = 1; i < subdivision; i++) {
+                const subTime = beatTime + (subDuration * i);
+                if (!practice.isCurrentlyMuted && !isCountingIn) {
+                    playSound(subTime, 'normal', true);
+                }
+                
+                // Visual feedback for subdivisions
+                const visualDelay = Math.max(0, (subTime - audioContext.currentTime - 0.01) * 1000);
+                const subIndex = i;
+                setTimeout(() => {
+                    if (isPlaying) {
+                        updateSubdivisionDotVisual(currentBeatInMeasure - 1, subIndex);
+                    }
+                }, visualDelay);
+            }
+        }
 
         function scheduler() {
             while (nextNoteTime < audioContext.currentTime + SCHEDULE_AHEAD_TIME) {
                 currentBeatInMeasure = (currentBeatInMeasure % beatsPerMeasure) + 1;
+                
+                // Handle count-in
+                if (isCountingIn) {
+                    countinBeatsRemaining--;
+                    playSound(nextNoteTime, 'normal');
+                    
+                    const visualDelay = Math.max(0, (nextNoteTime - audioContext.currentTime - 0.01) * 1000);
+                    const countinBeat = beatsPerMeasure - countinBeatsRemaining;
+                    setTimeout(() => {
+                        if (isPlaying) {
+                            dom.countinIndicator.textContent = countinBeat;
+                            dom.countinIndicator.classList.add('visible');
+                            dom.visualBeat.classList.add('beat-active');
+                            setTimeout(() => {
+                                dom.visualBeat.classList.remove('beat-active');
+                            }, 80);
+                        }
+                    }, visualDelay);
+                    
+                    if (countinBeatsRemaining <= 0) {
+                        isCountingIn = false;
+                        currentBeatInMeasure = 0;
+                        setTimeout(() => {
+                            dom.countinIndicator.classList.remove('visible');
+                        }, (nextNoteTime - audioContext.currentTime) * 1000 + 100);
+                    }
+                    
+                    nextNoteTime += 60.0 / tempo;
+                    continue;
+                }
                 
                 const isLastBeat = currentBeatInMeasure === beatsPerMeasure;
                 if (isLastBeat && practice.isActive) {
@@ -776,20 +1069,27 @@
                 if (!practice.isCurrentlyMuted && beatState !== 'mute') {
                     playSound(nextNoteTime, beatState === 'accent' ? 'accent' : 'normal');
                 }
+                
+                // Schedule subdivisions
+                const beatDuration = 60.0 / tempo;
+                scheduleSubdivisions(nextNoteTime, beatDuration);
 
                 const visualDelay = Math.max(0, (nextNoteTime - audioContext.currentTime - 0.01) * 1000);
+                const beatNum = currentBeatInMeasure;
                 setTimeout(() => {
-                    if (isPlaying) {
+                    if (isPlaying && !isCountingIn) {
                         dom.visualBeat.classList.toggle('beat-muted', practice.isCurrentlyMuted);
                         dom.visualBeat.classList.toggle('beat-active', !practice.isCurrentlyMuted);
-                        dom.beatCount.textContent = currentBeatInMeasure;
+                        dom.beatCount.textContent = beatNum;
+                        updateBeatDotVisual(beatNum - 1);
+                        updatePendulum(beatNum);
                         if (!practice.isCurrentlyMuted) {
                             setTimeout(() => dom.visualBeat.classList.remove('beat-active'), 80);
                         }
                     }
                 }, visualDelay);
 
-                nextNoteTime += 60.0 / tempo;
+                nextNoteTime += beatDuration;
             }
             schedulerTimerID = setTimeout(scheduler, LOOKAHEAD_INTERVAL);
         }
@@ -856,6 +1156,15 @@
 
             isPlaying = true;
             currentBeatInMeasure = 0;
+            
+            // Handle count-in
+            if (countinEnabled && dom.countinToggle.checked) {
+                isCountingIn = true;
+                countinBeatsRemaining = beatsPerMeasure;
+            } else {
+                isCountingIn = false;
+            }
+            
             nextNoteTime = audioContext.currentTime + 0.1;
             scheduler();
             dom.startStopText.textContent = translations.stopBtn[currentLang];
@@ -863,11 +1172,16 @@
             dom.startStopButton.classList.add('active');
             dom.visualBeat.style.opacity = 1;
             dom.beatCount.textContent = '●';
+            
+            // Start practice timer
+            startPracticeTimer();
+            dom.practiceTimer.classList.add('active');
         }
 
         function stopMetronome() {
             if (!isPlaying) return;
             isPlaying = false;
+            isCountingIn = false;
             clearTimeout(schedulerTimerID);
             dom.beatCount.textContent = '';
             dom.visualBeat.classList.remove('beat-active', 'beat-muted');
@@ -876,6 +1190,104 @@
             dom.startStopIcon.innerHTML = '▶';
             dom.startStopButton.classList.remove('active');
             dom.container.classList.remove('practice-mode-active');
+            dom.countinIndicator.classList.remove('visible');
+            
+            // Stop practice timer
+            stopPracticeTimer();
+            dom.practiceTimer.classList.remove('active');
+            
+            // Reset beat dots visual
+            resetBeatDotsVisual();
+            resetPendulum();
+        }
+        
+        // Practice Timer functions
+        function startPracticeTimer() {
+            practiceStartTime = Date.now();
+            updatePracticeTimerDisplay();
+            practiceTimerInterval = setInterval(updatePracticeTimerDisplay, 1000);
+        }
+        
+        function stopPracticeTimer() {
+            if (practiceTimerInterval) {
+                clearInterval(practiceTimerInterval);
+                practiceTimerInterval = null;
+            }
+        }
+        
+        function updatePracticeTimerDisplay() {
+            if (!practiceStartTime) return;
+            const elapsed = Math.floor((Date.now() - practiceStartTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            dom.practiceTimerText.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+        
+        // Beat dots visual functions
+        function updateBeatDotsUI() {
+            dom.beatDots.innerHTML = '';
+            for (let i = 0; i < beatsPerMeasure; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'beat-dot';
+                const state = accentPattern[i] || (i === 0 ? 'accent' : 'normal');
+                if (state === 'accent') dot.classList.add('accent');
+                if (state === 'mute') dot.classList.add('muted');
+                dom.beatDots.appendChild(dot);
+            }
+        }
+        
+        function updateBeatDotVisual(beatIndex) {
+            const dots = dom.beatDots.querySelectorAll('.beat-dot');
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === beatIndex);
+            });
+        }
+        
+        function updateSubdivisionDotVisual(beatIndex, subIndex) {
+            // Visual feedback for subdivisions - pulse effect on current beat dot
+            const dots = dom.beatDots.querySelectorAll('.beat-dot');
+            if (dots[beatIndex]) {
+                dots[beatIndex].style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    dots[beatIndex].style.transform = '';
+                }, 50);
+            }
+        }
+        
+        function resetBeatDotsVisual() {
+            const dots = dom.beatDots.querySelectorAll('.beat-dot');
+            dots.forEach(dot => dot.classList.remove('active'));
+        }
+        
+        // Pendulum animation functions
+        function updatePendulum(beatNum) {
+            // Swing pendulum based on beat
+            pendulumDirection = beatNum % 2 === 1 ? 1 : -1;
+            pendulumPosition = pendulumDirection === 1 ? 90 : 10;
+            dom.pendulumBall.style.left = pendulumPosition + '%';
+            dom.pendulumBall.classList.add('active');
+            setTimeout(() => {
+                dom.pendulumBall.classList.remove('active');
+            }, 100);
+        }
+        
+        function resetPendulum() {
+            pendulumPosition = 50;
+            dom.pendulumBall.style.left = '50%';
+            dom.pendulumBall.classList.remove('active');
+        }
+        
+        // Subdivision functions
+        function changeSubdivision(value, silent = false) {
+            subdivision = parseInt(value, 10) || 1;
+            dom.subdivisionOptionBtns.forEach(opt => {
+                opt.classList.toggle('active', parseInt(opt.dataset.subdivision, 10) === subdivision);
+            });
+            if (!silent) saveSettings();
+        }
+        
+        function setSubdivisionVisible(isVisible) {
+            dom.subdivisionOptions.classList.toggle('visible', isVisible);
         }
 
         function updateTempoUI(newTempo) {
@@ -937,10 +1349,12 @@
                     selector.dataset.state = nextState;
                     selector.textContent = nextState.charAt(0).toUpperCase();
                     if (audioContext?.state === 'running' && nextState !== 'mute') playSound(audioContext.currentTime, nextState === 'accent' ? 'accent' : 'normal');
+                    updateBeatDotsUI(); // Update beat dots when pattern changes
                     saveSettings();
                 });
                 dom.accentPatternContainer.appendChild(sel);
             }
+            updateBeatDotsUI(); // Update beat dots UI
             if (isPlaying) currentBeatInMeasure = 0;
         }
 
@@ -971,9 +1385,11 @@
                 changeSoundType('classic', true);
                 updateAccentPatternUI();
                 updatePracticeModeUI();
+                updateBeatDotsUI();
                 dom.volumeSlider.value = 0.7;
             }
             dom.visualBeat.style.opacity = 0.5;
+            resetPendulum();
             
             // Event Listeners
             dom.langToggleButton.addEventListener('click', () => {
@@ -1008,14 +1424,18 @@
             const makeToggleable = (toggleId) => {
                 const toggle = document.getElementById(toggleId);
                 const label = document.querySelector(`label[for="${toggleId}"]`);
-                label.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    toggle.checked = !toggle.checked;
-                    toggle.dispatchEvent(new Event('change'));
-                });
+                if (label) {
+                    label.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        toggle.checked = !toggle.checked;
+                        toggle.dispatchEvent(new Event('change'));
+                    });
+                }
             };
             makeToggleable('accentPatternToggle');
             makeToggleable('practiceModeToggle');
+            makeToggleable('subdivisionToggle');
+            makeToggleable('countinToggle');
 
             dom.accentPatternToggle.addEventListener('change', () => { setAccentPatternVisible(dom.accentPatternToggle.checked); saveSettings(); });
             
@@ -1030,6 +1450,21 @@
             
             [dom.practiceStartTempo, dom.practiceEndTempo, dom.practiceIncrement, dom.practiceInterval, dom.practicePlayMeasures, dom.practiceMuteMeasures]
                 .forEach(input => input.addEventListener('change', saveSettings));
+            
+            // Subdivision event listeners
+            dom.subdivisionToggle.addEventListener('change', () => { 
+                setSubdivisionVisible(dom.subdivisionToggle.checked); 
+                saveSettings(); 
+            });
+            dom.subdivisionOptionBtns.forEach(opt => opt.addEventListener('click', () => {
+                changeSubdivision(opt.dataset.subdivision);
+            }));
+            
+            // Count-in event listener
+            dom.countinToggle.addEventListener('change', () => {
+                countinEnabled = dom.countinToggle.checked;
+                saveSettings();
+            });
 
             // Sponsor Modal Listeners
             const sponsorModal = document.getElementById('sponsorModal');
@@ -1055,9 +1490,22 @@
                 const keyMap = {
                     'Space': () => isPlaying ? stopMetronome() : startMetronome(),
                     'KeyT': () => dom.tapButton.click(),
-                    'Digit1': () => changeSoundType('classic'), 'Digit2': () => changeSoundType('wood'), 'Digit3': () => changeSoundType('digital'),
-                    'ArrowUp': () => setTempoValidated(tempo + 1), 'ArrowRight': () => setTempoValidated(tempo + 1),
-                    'ArrowDown': () => setTempoValidated(tempo - 1), 'ArrowLeft': () => setTempoValidated(tempo - 1),
+                    'Digit1': () => changeSoundType('classic'), 
+                    'Digit2': () => changeSoundType('wood'), 
+                    'Digit3': () => changeSoundType('digital'),
+                    'Digit4': () => { // Cycle through subdivisions
+                        const nextSub = subdivision >= 4 ? 1 : subdivision + 1;
+                        changeSubdivision(nextSub);
+                    },
+                    'ArrowUp': () => setTempoValidated(tempo + 1), 
+                    'ArrowRight': () => setTempoValidated(tempo + 1),
+                    'ArrowDown': () => setTempoValidated(tempo - 1), 
+                    'ArrowLeft': () => setTempoValidated(tempo - 1),
+                    'KeyC': () => { // Toggle count-in
+                        dom.countinToggle.checked = !dom.countinToggle.checked;
+                        countinEnabled = dom.countinToggle.checked;
+                        saveSettings();
+                    },
                 };
                 if(keyMap[e.code]) { e.preventDefault(); keyMap[e.code](); }
             });
