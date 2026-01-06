@@ -207,23 +207,28 @@
         .beat-muted { background-color: var(--secondary-darker); opacity: 0.6; transform: scale(1.0); }
         .beat-count { font-size: 26px; }
         
-        /* Practice Timer Display */
+        /* Practice Timer Display - Larger and more prominent */
         .practice-timer {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
-            font-size: 12px;
-            color: var(--text-lighter);
-            margin-bottom: 4px;
+            gap: 8px;
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--text-medium);
+            margin-top: 8px;
+            padding: 6px 16px;
+            background-color: var(--secondary-color);
+            border-radius: var(--border-radius-medium);
         }
         .practice-timer svg {
-            width: 14px;
-            height: 14px;
-            fill: var(--text-lighter);
+            width: 18px;
+            height: 18px;
+            fill: var(--text-medium);
         }
         .practice-timer.active {
             color: var(--primary-color);
+            background-color: rgba(52, 152, 219, 0.1);
         }
         .practice-timer.active svg {
             fill: var(--primary-color);
@@ -286,8 +291,8 @@
         .toggle-switch input:checked + .slider { background-color: var(--primary-color); }
         .toggle-switch input:focus + .slider { box-shadow: 0 0 1px var(--primary-color); }
         .toggle-switch input:checked + .slider:before { transform: translateX(18px); }
-        .accent-pattern-header, .practice-mode-header, .subdivision-header, .countin-header { display: flex; justify-content: flex-start; align-items: center; gap: 8px; margin-bottom: 3px; }
-        .accent-pattern-header label[for], .practice-mode-header label[for], .subdivision-header label[for], .countin-header label[for] { margin-bottom: 0; font-weight: 500; color: var(--text-medium); cursor: pointer; }
+        .accent-pattern-header, .practice-mode-header, .subdivision-header { display: flex; justify-content: flex-start; align-items: center; gap: 8px; margin-bottom: 3px; }
+        .accent-pattern-header label[for], .practice-mode-header label[for], .subdivision-header label[for] { margin-bottom: 0; font-weight: 500; color: var(--text-medium); cursor: pointer; }
         .accent-pattern-container { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; overflow: hidden; max-height: 0; opacity: 0; transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin-top 0.3s ease-out; margin-top: 0; }
         .accent-pattern-container.visible { max-height: 100px; opacity: 1; margin-top: 4px; }
         .accent-beat-selector { width: 28px; height: 28px; border: 1px solid var(--accent-beat-border); border-radius: var(--border-radius-small); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; cursor: pointer; user-select: none; transition: background-color 0.15s, color 0.15s, border-color 0.15s; flex-shrink: 0; line-height: 1; }
@@ -306,22 +311,6 @@
         }
         .subdivision-option:hover { background-color: var(--secondary-color); border-color: var(--secondary-darker); }
         .subdivision-option.active { background-color: var(--subdivision-color); color: var(--white); border-color: var(--subdivision-color); font-weight: 600; }
-        
-        /* Count-in indicator */
-        .countin-indicator {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--primary-color);
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        .countin-indicator.visible {
-            opacity: 1;
-        }
         
         /* Tempo preset bookmark button */
         .tempo-bookmark-btn {
@@ -480,18 +469,17 @@
             <!-- Beat dots showing the measure -->
             <div class="beat-dots" id="beatDots"></div>
             
-            <!-- Practice timer -->
+            <div class="visual-beat" id="visualBeat">
+                <span class="beat-count" id="beatCount"></span>
+            </div>
+            <div class="tempo-display" id="tempoDisplay">80</div>
+            <div class="tempo-text" id="tempoText">Adagio</div>
+            
+            <!-- Practice timer - moved below tempo display -->
             <div class="practice-timer" id="practiceTimer">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
                 <span id="practiceTimerText">00:00</span>
             </div>
-            
-            <div class="visual-beat" id="visualBeat">
-                <span class="beat-count" id="beatCount"></span>
-                <span class="countin-indicator" id="countinIndicator"></span>
-            </div>
-            <div class="tempo-display" id="tempoDisplay">80</div>
-            <div class="tempo-text" id="tempoText">Adagio</div>
         </div>
 
         <div class="control-section">
@@ -578,17 +566,6 @@
                     <div class="subdivision-option" data-subdivision="2" data-i18n-key="subEighth">♪♪ Eighth</div>
                     <div class="subdivision-option" data-subdivision="3" data-i18n-key="subTriplet">♪♪♪ Triplet</div>
                     <div class="subdivision-option" data-subdivision="4" data-i18n-key="subSixteenth">♬ 16th</div>
-                </div>
-            </div>
-            
-            <!-- Count-in Control - New Feature -->
-            <div class="control-group countin-section">
-                <div class="countin-header">
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="countinToggle">
-                        <span class="slider"></span>
-                    </label>
-                    <label for="countinToggle" data-i18n-key="countinLabel">Count-in (1 measure)</label>
                 </div>
             </div>
 
@@ -694,7 +671,6 @@
             subEighth: { en: "♪♪ Eighth", zh: "♪♪ 八分" },
             subTriplet: { en: "♪♪♪ Triplet", zh: "♪♪♪ 三连音" },
             subSixteenth: { en: "♬ 16th", zh: "♬ 十六分" },
-            countinLabel: { en: "Count-in (1 measure)", zh: "预备拍 (1小节)" },
             practiceLabel: { en: "Auto Tempo / Practice", zh: "自动速度/练习" },
             practiceMode: { en: "Mode", zh: "模式" },
             practiceModeTempo: { en: "Auto Tempo Increase/Decrease", zh: "自动速度递增/减" },
@@ -777,8 +753,6 @@
             subdivisionToggle: document.getElementById('subdivisionToggle'),
             subdivisionOptions: document.getElementById('subdivisionOptions'),
             subdivisionOptionBtns: document.querySelectorAll('.subdivision-option'),
-            countinToggle: document.getElementById('countinToggle'),
-            countinIndicator: document.getElementById('countinIndicator'),
         };
 
         // --- Audio & Sound ---
@@ -805,9 +779,6 @@
         let practiceInitialTempo = 80;
         let currentLang = 'zh'; // Default language
         let subdivision = 1; // 1=none, 2=eighth, 3=triplet, 4=sixteenth
-        let countinEnabled = false;
-        let isCountingIn = false;
-        let countinBeatsRemaining = 0;
         
         // Practice timer
         let practiceStartTime = null;
@@ -904,7 +875,6 @@
                 // New settings
                 subdivision: subdivision,
                 isSubdivisionVisible: dom.subdivisionToggle.checked,
-                countinEnabled: dom.countinToggle.checked,
             };
             try { localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(settings)); }
             catch (e) { console.error("Error saving settings:", e); }
@@ -944,8 +914,6 @@
             changeSubdivision(subdivision, true);
             dom.subdivisionToggle.checked = settings.isSubdivisionVisible || false;
             setSubdivisionVisible(dom.subdivisionToggle.checked);
-            dom.countinToggle.checked = settings.countinEnabled || false;
-            countinEnabled = dom.countinToggle.checked;
 
             updateAccentPatternUI(settings.accentPattern);
             setAccentPatternVisible(dom.accentPatternToggle.checked);
@@ -1018,36 +986,6 @@
             while (nextNoteTime < audioContext.currentTime + SCHEDULE_AHEAD_TIME) {
                 currentBeatInMeasure = (currentBeatInMeasure % beatsPerMeasure) + 1;
                 
-                // Handle count-in
-                if (isCountingIn) {
-                    countinBeatsRemaining--;
-                    playSound(nextNoteTime, 'normal');
-                    
-                    const visualDelay = Math.max(0, (nextNoteTime - audioContext.currentTime - 0.01) * 1000);
-                    const countinBeat = beatsPerMeasure - countinBeatsRemaining;
-                    setTimeout(() => {
-                        if (isPlaying) {
-                            dom.countinIndicator.textContent = countinBeat;
-                            dom.countinIndicator.classList.add('visible');
-                            dom.visualBeat.classList.add('beat-active');
-                            setTimeout(() => {
-                                dom.visualBeat.classList.remove('beat-active');
-                            }, 80);
-                        }
-                    }, visualDelay);
-                    
-                    if (countinBeatsRemaining <= 0) {
-                        isCountingIn = false;
-                        currentBeatInMeasure = 0;
-                        setTimeout(() => {
-                            dom.countinIndicator.classList.remove('visible');
-                        }, (nextNoteTime - audioContext.currentTime) * 1000 + 100);
-                    }
-                    
-                    nextNoteTime += 60.0 / tempo;
-                    continue;
-                }
-                
                 const isLastBeat = currentBeatInMeasure === beatsPerMeasure;
                 if (isLastBeat && practice.isActive) {
                     practice.barCounter++;
@@ -1068,7 +1006,7 @@
                 const visualDelay = Math.max(0, (nextNoteTime - audioContext.currentTime - 0.01) * 1000);
                 const beatNum = currentBeatInMeasure;
                 setTimeout(() => {
-                    if (isPlaying && !isCountingIn) {
+                    if (isPlaying) {
                         dom.visualBeat.classList.toggle('beat-muted', practice.isCurrentlyMuted);
                         dom.visualBeat.classList.toggle('beat-active', !practice.isCurrentlyMuted);
                         dom.beatCount.textContent = beatNum;
@@ -1148,14 +1086,6 @@
             isPlaying = true;
             currentBeatInMeasure = 0;
             
-            // Handle count-in
-            if (countinEnabled && dom.countinToggle.checked) {
-                isCountingIn = true;
-                countinBeatsRemaining = beatsPerMeasure;
-            } else {
-                isCountingIn = false;
-            }
-            
             nextNoteTime = audioContext.currentTime + 0.1;
             scheduler();
             dom.startStopText.textContent = translations.stopBtn[currentLang];
@@ -1172,7 +1102,6 @@
         function stopMetronome() {
             if (!isPlaying) return;
             isPlaying = false;
-            isCountingIn = false;
             clearTimeout(schedulerTimerID);
             dom.beatCount.textContent = '';
             dom.visualBeat.classList.remove('beat-active', 'beat-muted');
@@ -1181,7 +1110,6 @@
             dom.startStopIcon.innerHTML = '▶';
             dom.startStopButton.classList.remove('active');
             dom.container.classList.remove('practice-mode-active');
-            dom.countinIndicator.classList.remove('visible');
             
             // Stop practice timer
             stopPracticeTimer();
@@ -1425,7 +1353,6 @@
             makeToggleable('accentPatternToggle');
             makeToggleable('practiceModeToggle');
             makeToggleable('subdivisionToggle');
-            makeToggleable('countinToggle');
 
             dom.accentPatternToggle.addEventListener('change', () => { setAccentPatternVisible(dom.accentPatternToggle.checked); saveSettings(); });
             
@@ -1449,12 +1376,6 @@
             dom.subdivisionOptionBtns.forEach(opt => opt.addEventListener('click', () => {
                 changeSubdivision(opt.dataset.subdivision);
             }));
-            
-            // Count-in event listener
-            dom.countinToggle.addEventListener('change', () => {
-                countinEnabled = dom.countinToggle.checked;
-                saveSettings();
-            });
 
             // Sponsor Modal Listeners
             const sponsorModal = document.getElementById('sponsorModal');
@@ -1491,11 +1412,6 @@
                     'ArrowRight': () => setTempoValidated(tempo + 1),
                     'ArrowDown': () => setTempoValidated(tempo - 1), 
                     'ArrowLeft': () => setTempoValidated(tempo - 1),
-                    'KeyC': () => { // Toggle count-in
-                        dom.countinToggle.checked = !dom.countinToggle.checked;
-                        countinEnabled = dom.countinToggle.checked;
-                        saveSettings();
-                    },
                 };
                 if(keyMap[e.code]) { e.preventDefault(); keyMap[e.code](); }
             });
