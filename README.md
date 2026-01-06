@@ -15,7 +15,9 @@ A feature-rich, beautiful, and highly customizable web-based metronome for serio
 * **Precision Timing**: Uses the Web Audio API for sample-accurate, stable beats.
 * **Wide Tempo Range**: Go from a meditative **30 BPM** to a blistering **250 BPM**, complete with traditional musical term indicators (e.g., *Largo, Adagio, Presto*).
 * **Multiple Sound Profiles**: Choose from **Classic**, **Woodblock**, and **Digital** tones to suit your preference.
-* **Visual Beat Indicator**: A clear, animated circle provides a visual cue for every beat, with the current beat number displayed inside.
+* **Rhythmic Subdivisions**: Break down the beat with **Eighth notes (♪♪)**, **Triplets (♪♪♪)**, or **16th notes (♬)** to refine your timing and feel.
+* **Setlist / Preset Manager**: Save your favorite settings (Tempo, Time Sig, Patterns) as named presets. Switch between songs or practice exercises instantly without resetting everything manually.
+* **Visual Beat Indicator**: A clear, animated circle provides a visual cue for every beat, with the current beat number displayed inside. Now features a pendulum animation for natural movement feel.
 * **Customizable Accent Patterns**: Emphasize any beat in a measure by setting it to **Accent**, **Normal**, or **Mute**. This is perfect for practicing complex rhythms and subdivisions.
 * **Advanced Practice Modes**:
     * **Auto Tempo Increase**: Automate your speed drills by having the metronome gradually increase the tempo after a set number of bars.
@@ -35,6 +37,13 @@ A feature-rich, beautiful, and highly customizable web-based metronome for serio
 
 ### For Advanced Practice:
 
+* **To Use Subdivisions**:
+    1.  Enable the **"Subdivision"** toggle.
+    2.  Select the desired subdivision note value (Eighth, Triplet, etc.) to hear the beats between the beats.
+* **To Manage Presets**:
+    1.  Click the **List Icon** in the top header.
+    2.  Type a name for your song or exercise and click **Save** to store current settings.
+    3.  Click **Load** on any saved item to instantly recall those settings.
 * **To Use Accent Patterns**:
     1.  Enable the **"Accent Pattern"** toggle.
     2.  Click the beat boxes that appear to cycle each beat through **A** (Accent), **N** (Normal), or **M** (Mute).
@@ -54,6 +63,7 @@ A feature-rich, beautiful, and highly customizable web-based metronome for serio
 * `1`: Select "Classic" sound
 * `2`: Select "Wood" sound
 * `3`: Select "Digital" sound
+* `4`: Cycle through Subdivisions
 
 ---
 
@@ -65,7 +75,7 @@ To run it locally:
 
 ```bash
 # 1. Clone the repository
-git clone [https://github.com/your-username/your-repo.git](https://github.com/your-username/your-repo.git)
+git clone https://github.com/your-username/your-repo.git
 
 # 2. Navigate into the directory
 cd your-repo
