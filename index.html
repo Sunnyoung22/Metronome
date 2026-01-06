@@ -11,6 +11,7 @@
             --primary-color: #3498db;
             --primary-darker: #2980b9;
             --primary-hover: #4ea8e1;
+            --primary-gradient: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
             --secondary-color: #ecf0f1;
             --secondary-darker: #dbe0e2;
             --text-dark: #2c3e50;
@@ -37,6 +38,10 @@
             --accent-beat-mute-bg: #fafafa;
             --accent-beat-mute-text: var(--text-lightest);
             --accent-beat-mute-border: #eee;
+            
+            /* Subdivision colors */
+            --subdivision-color: #e74c3c;
+            --subdivision-light: rgba(231, 76, 60, 0.3);
 
             --border-radius-small: 4px;
             --border-radius-medium: 8px;
@@ -44,11 +49,11 @@
             --font-family-main: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 
             /* --- COMPACT LAYOUT SPACING --- */
-            --gap-container: 10px;  /* Reduced from 12px */
-            --gap-section: 10px;    /* Reduced from 12px */
-            --gap-group: 8px;       /* Reduced from 10px */
-            --gap-row: 8px;         /* Reduced from 10px */
-            --gap-controls: 5px;    /* Reduced from 6px */
+            --gap-container: 10px;
+            --gap-section: 10px;
+            --gap-group: 8px;
+            --gap-row: 8px;
+            --gap-controls: 5px;
         }
 
         /* --- Dark Theme --- */
@@ -56,6 +61,7 @@
             --primary-color: #3fa5f3;
             --primary-darker: #2980b9;
             --primary-hover: #5bb2f5;
+            --primary-gradient: linear-gradient(135deg, #3fa5f3 0%, #2980b9 100%);
             --secondary-color: #3a3f44;
             --secondary-darker: #4a5056;
             --text-dark: #e8eaed;
@@ -81,6 +87,9 @@
             --accent-beat-mute-bg: #222;
             --accent-beat-mute-text: var(--text-lightest);
             --accent-beat-mute-border: #333;
+            
+            --subdivision-color: #e74c3c;
+            --subdivision-light: rgba(231, 76, 60, 0.4);
         }
 
         /* Base Styles & Typography */
@@ -90,7 +99,7 @@
             font-family: var(--font-family-main);
             color: var(--text-dark);
             background-color: var(--background-light);
-            line-height: 1.4; /* Reduced line-height slightly */
+            line-height: 1.4;
             padding: 12px 8px;
             max-width: 100%; overflow-x: hidden;
             touch-action: manipulation; -webkit-tap-highlight-color: transparent;
@@ -102,15 +111,15 @@
             background-color: var(--background-card);
             border-radius: var(--border-radius-large);
             box-shadow: 0 4px 15px var(--shadow-color);
-            padding: 12px 14px; /* Reduced vertical padding */
+            padding: 12px 14px;
             gap: var(--gap-container);
             transition: background-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         /* Header & Theme Toggle */
-        .header { text-align: center; margin-bottom: -4px; /* Adjusted margin */ position: relative; }
+        .header { text-align: center; margin-bottom: -4px; position: relative; }
         h1 { font-size: 18px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 2px; color: var(--text-medium); }
-        .subtitle { font-size: 11px; font-style: italic; color: var(--text-light); line-height: 1.2; } /* Reduced line-height */
+        .subtitle { font-size: 11px; font-style: italic; color: var(--text-light); line-height: 1.2; }
         .subtitle + .subtitle { margin-top: -2px; }
         .theme-toggle-btn { position: absolute; top: -4px; right: -2px; width: 32px; height: 32px; background-color: var(--theme-toggle-bg); border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; transition: background-color 0.2s ease; }
         .theme-toggle-btn:hover { background-color: var(--secondary-darker); }
@@ -119,22 +128,114 @@
         [data-theme='dark'] .theme-toggle-btn .moon { display: block; }
         [data-theme='dark'] .theme-toggle-btn .sun { display: none; }
 
-        /* Beat Visualizer -- Made more compact */
+        /* Beat Visualizer - Enhanced with pendulum animation */
         .beat-display { display: flex; flex-direction: column; align-items: center; padding: 0; }
+        
+        /* Pendulum Container */
+        .pendulum-container {
+            width: 100%;
+            height: 60px;
+            position: relative;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+        .pendulum-track {
+            position: absolute;
+            top: 50%;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--secondary-color) 0%, var(--primary-color) 50%, var(--secondary-color) 100%);
+            border-radius: 2px;
+            transform: translateY(-50%);
+        }
+        .pendulum-ball {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            top: 50%;
+            left: 10%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 2px 8px var(--shadow-active-color);
+            transition: left 0.1s linear;
+        }
+        .pendulum-ball.active {
+            transform: translate(-50%, -50%) scale(1.2);
+            box-shadow: 0 0 15px var(--shadow-active-color);
+        }
+        
+        /* Beat dots row */
+        .beat-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .beat-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            border: 2px solid var(--border-color);
+            transition: all 0.1s ease-out;
+        }
+        .beat-dot.active {
+            background-color: var(--primary-color);
+            border-color: var(--primary-darker);
+            transform: scale(1.2);
+            box-shadow: 0 0 8px var(--shadow-active-color);
+        }
+        .beat-dot.accent {
+            border-color: var(--primary-color);
+        }
+        .beat-dot.muted {
+            opacity: 0.4;
+        }
+        
         .visual-beat {
-            width: 55px; height: 55px; /* Reduced size */
+            width: 55px; height: 55px;
             background-color: var(--secondary-color); border-radius: 50%;
             transition: transform 0.1s ease-out, background-color 0.1s, box-shadow 0.1s;
             display: flex; align-items: center; justify-content: center;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
-            margin-bottom: 8px; /* Reduced margin */
+            margin-bottom: 8px;
             color: var(--white); font-weight: 300;
         }
         .beat-active { background-color: var(--primary-color); transform: scale(1.08); box-shadow: 0 0 15px var(--shadow-active-color); }
         .beat-muted { background-color: var(--secondary-darker); opacity: 0.6; transform: scale(1.0); }
-        .beat-count { font-size: 26px; /* Reduced font size */ }
-        .tempo-display { font-size: 38px; /* Reduced font size */ font-weight: 300; color: var(--text-dark); margin: 0; }
-        .tempo-text { font-size: 13px; /* Reduced font size */ color: var(--text-light); font-style: italic; margin-top: -4px; /* Adjusted margin */ }
+        .beat-count { font-size: 26px; }
+        
+        /* Practice Timer Display - Tuned down size */
+        .practice-timer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-medium);
+            margin-top: 6px;
+            padding: 4px 12px;
+            background-color: var(--secondary-color);
+            border-radius: var(--border-radius-medium);
+        }
+        .practice-timer svg {
+            width: 15px;
+            height: 15px;
+            fill: var(--text-medium);
+        }
+        .practice-timer.active {
+            color: var(--primary-color);
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        .practice-timer.active svg {
+            fill: var(--primary-color);
+        }
+        
+        .tempo-display { font-size: 38px; font-weight: 300; color: var(--text-dark); margin: 0; }
+        .tempo-text { font-size: 13px; color: var(--text-light); font-style: italic; margin-top: -4px; }
 
         /* Controls */
         .control-section { display: flex; flex-direction: column; gap: var(--gap-section); }
@@ -190,14 +291,39 @@
         .toggle-switch input:checked + .slider { background-color: var(--primary-color); }
         .toggle-switch input:focus + .slider { box-shadow: 0 0 1px var(--primary-color); }
         .toggle-switch input:checked + .slider:before { transform: translateX(18px); }
-        .accent-pattern-header, .practice-mode-header { display: flex; justify-content: flex-start; align-items: center; gap: 8px; margin-bottom: 3px; /* Reduced margin */ }
-        .accent-pattern-header label[for], .practice-mode-header label[for] { margin-bottom: 0; font-weight: 500; color: var(--text-medium); cursor: pointer; }
+        .accent-pattern-header, .practice-mode-header, .subdivision-header { display: flex; justify-content: flex-start; align-items: center; gap: 8px; margin-bottom: 3px; }
+        .accent-pattern-header label[for], .practice-mode-header label[for], .subdivision-header label[for] { margin-bottom: 0; font-weight: 500; color: var(--text-medium); cursor: pointer; }
         .accent-pattern-container { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; overflow: hidden; max-height: 0; opacity: 0; transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin-top 0.3s ease-out; margin-top: 0; }
-        .accent-pattern-container.visible { max-height: 100px; opacity: 1; margin-top: 4px; /* Reduced margin */ }
+        .accent-pattern-container.visible { max-height: 100px; opacity: 1; margin-top: 4px; }
         .accent-beat-selector { width: 28px; height: 28px; border: 1px solid var(--accent-beat-border); border-radius: var(--border-radius-small); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; cursor: pointer; user-select: none; transition: background-color 0.15s, color 0.15s, border-color 0.15s; flex-shrink: 0; line-height: 1; }
         .accent-beat-selector.state-accent { background-color: var(--accent-beat-accent-bg); color: var(--accent-beat-accent-text); border-color: var(--accent-beat-accent-bg); }
         .accent-beat-selector.state-normal { background-color: var(--accent-beat-normal-bg); color: var(--accent-beat-normal-text); border-color: var(--accent-beat-border); }
         .accent-beat-selector.state-mute { background-color: var(--accent-beat-mute-bg); color: var(--accent-beat-mute-text); border-color: var(--accent-beat-mute-border); font-style: italic; }
+        
+        /* Subdivision Styles */
+        .subdivision-options { display: flex; gap: var(--gap-controls); overflow: hidden; max-height: 0; opacity: 0; transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin-top 0.3s ease-out; margin-top: 0; }
+        .subdivision-options.visible { max-height: 50px; opacity: 1; margin-top: 4px; }
+        .subdivision-option {
+            flex: 1; padding: 6px 4px;
+            text-align: center; border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-medium); background-color: transparent; font-size: 12px;
+            cursor: pointer; transition: all 0.2s; color: var(--text-medium);
+        }
+        .subdivision-option:hover { background-color: var(--secondary-color); border-color: var(--secondary-darker); }
+        .subdivision-option.active { background-color: var(--subdivision-color); color: var(--white); border-color: var(--subdivision-color); font-weight: 600; }
+        
+        /* Tempo preset bookmark button */
+        .tempo-bookmark-btn {
+            padding: 4px 8px !important;
+            font-size: 14px !important;
+            min-width: 30px;
+            flex: 0 0 auto !important;
+        }
+        .tempo-bookmark-btn svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
 
         /* Enhanced Practice Mode Styles */
         .practice-controls { display: flex; flex-direction: column; gap: 8px; overflow: hidden; max-height: 0; opacity: 0; transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin-top 0.3s ease-out; margin-top: 0; }
@@ -319,12 +445,37 @@
             font-size: 12px;
             font-weight: 500;
         }
+
+        /* --- Preset Manager Styles --- */
+        .preset-toggle-btn { position: absolute; top: -4px; right: 38px; width: 32px; height: 32px; background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; color: var(--text-medium); transition: color 0.2s; border-radius: 50%; }
+        .preset-toggle-btn:hover { background-color: var(--secondary-darker); color: var(--primary-color); }
+        .preset-toggle-btn svg { width: 18px; height: 18px; fill: currentColor; }
+        
+        .preset-input-group { display: flex; gap: 8px; margin-bottom: 15px; }
+        .preset-input-group input { flex: 1; text-align: left; }
+        .preset-list { list-style: none; margin: 0; padding: 0; max-height: 250px; overflow-y: auto; text-align: left; }
+        .preset-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-bottom: 1px solid var(--border-color); font-size: 13px; transition: background-color 0.2s; border-radius: 4px; }
+        .preset-item:hover { background-color: var(--background-light); }
+        .preset-item:last-child { border-bottom: none; }
+        .preset-info { display: flex; flex-direction: column; gap: 2px; flex: 1; cursor: pointer; padding-right: 10px; }
+        .preset-name { font-weight: 600; color: var(--text-dark); }
+        .preset-details { font-size: 11px; color: var(--text-light); display: flex; align-items: center; gap: 6px; }
+        .preset-tag { background-color: var(--secondary-color); padding: 1px 4px; border-radius: 3px; font-size: 10px; }
+        .preset-actions { display: flex; gap: 6px; }
+        .delete-btn { color: var(--text-light); background: none; border: none; padding: 4px; cursor: pointer; transition: color 0.2s; }
+        .delete-btn:hover { color: #e74c3c; }
+        .delete-btn svg { width: 14px; height: 14px; fill: currentColor; }
+        .load-btn { font-size: 11px; padding: 4px 8px; min-width: auto; }
+        .empty-presets { text-align: center; color: var(--text-light); padding: 20px; font-style: italic; font-size: 13px; }
     </style>
 </head>
 <body>
     <div class="container" id="metronomeContainer">
         <div class="header">
             <h1 data-i18n-key="title">EVAN'S METRONOME</h1>
+            <button id="presetToggle" class="preset-toggle-btn" aria-label="Presets">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 10h12v2H4zm0-4h12v2H4zm0 8h8v2H4zm10 0v6l5-3z"/></svg>
+            </button>
             <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme">
                 <svg class="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.64 5.64c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l1.41 1.41c.39.39 1.02.39 1.41 0s.39-1.02 0-1.41L5.64 5.64zm12.73 12.73c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41l1.41 1.41c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41l-1.41-1.41zM18.36 5.64l-1.41 1.41c-.39.39-.39 1.02 0 1.41s1.02.39 1.41 0l1.41-1.41c.39-.39.39-1.02 0-1.41s-1.02-.39-1.41 0zM7.05 18.36l-1.41 1.41c-.39-.39-.39 1.02 0 1.41s1.02.39 1.41 0l1.41-1.41c.39-.39.39-1.02 0-1.41s-1.03-.39-1.41 0z"/></svg>
                 <svg class="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12.3 4.9c.4-.2.6-.7.4-1.1-.2-.4-.7-.6-1.1-.4C7.2 5.4 4 9.2 4 13.5 4 19.3 8.7 24 14.5 24c4.3 0 8.1-3.2 10.1-7.5-.2-.4-.7-.6-1.1-.4s-.6.7-.4 1.1c-1.8 3.6-5.2 6-9.1 6-4.9 0-8.8-3.9-8.8-8.8 0-3.9 2.5-7.3 6.2-8.8z"/></svg>
@@ -334,11 +485,26 @@
         </div>
 
         <div class="beat-display">
+            <!-- Pendulum animation -->
+            <div class="pendulum-container">
+                <div class="pendulum-track"></div>
+                <div class="pendulum-ball" id="pendulumBall"></div>
+            </div>
+            
+            <!-- Beat dots showing the measure -->
+            <div class="beat-dots" id="beatDots"></div>
+            
             <div class="visual-beat" id="visualBeat">
                 <span class="beat-count" id="beatCount"></span>
             </div>
             <div class="tempo-display" id="tempoDisplay">80</div>
             <div class="tempo-text" id="tempoText">Adagio</div>
+            
+            <!-- Practice timer - moved below tempo display -->
+            <div class="practice-timer" id="practiceTimer">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                <span id="practiceTimerText">00:00</span>
+            </div>
         </div>
 
         <div class="control-section">
@@ -409,6 +575,23 @@
                     <label for="accentPatternToggle" data-i18n-key="accentLabel">Accent Pattern (A/N/M)</label>
                 </div>
                 <div class="accent-pattern-container" id="accentPatternContainer"></div>
+            </div>
+            
+            <!-- Subdivision Control - New Feature -->
+            <div class="control-group subdivision-section">
+                <div class="subdivision-header">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="subdivisionToggle">
+                        <span class="slider"></span>
+                    </label>
+                    <label for="subdivisionToggle" data-i18n-key="subdivisionLabel">Subdivision</label>
+                </div>
+                <div class="subdivision-options" id="subdivisionOptions">
+                    <div class="subdivision-option active" data-subdivision="1" data-i18n-key="subNone">♩ None</div>
+                    <div class="subdivision-option" data-subdivision="2" data-i18n-key="subEighth">♪♪ Eighth</div>
+                    <div class="subdivision-option" data-subdivision="3" data-i18n-key="subTriplet">♪♪♪ Triplet</div>
+                    <div class="subdivision-option" data-subdivision="4" data-i18n-key="subSixteenth">♬ 16th</div>
+                </div>
             </div>
 
             <div class="control-group practice-mode-section">
@@ -491,6 +674,20 @@
             </div>
         </div>
     </div>
+
+    <div id="presetModal" class="modal">
+        <div class="modal-content">
+            <span class="close-preset-btn close-btn">&times;</span>
+            <h3 data-i18n-key="presetTitle">Setlist / Presets</h3>
+            <div class="preset-input-group">
+                <input type="text" id="newPresetName" placeholder="Song Name" data-i18n-placeholder="presetNamePlaceholder">
+                <button class="primary-btn" id="savePresetBtn" style="flex: 0 0 auto;" data-i18n-key="saveBtn">Save</button>
+            </div>
+            <ul class="preset-list" id="presetList">
+                <li class="empty-presets" data-i18n-key="noPresets">No saved presets yet</li>
+            </ul>
+        </div>
+    </div>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         // --- I18N Translations ---
@@ -508,6 +705,11 @@
             soundDigital: { en: "Digital", zh: "电子" },
             volumeLabel: { en: "Volume", zh: "音量" },
             accentLabel: { en: "Accent Pattern (A/N/M)", zh: "重音模式 (重/普/静)" },
+            subdivisionLabel: { en: "Subdivision", zh: "细分" },
+            subNone: { en: "♩ None", zh: "♩ 无" },
+            subEighth: { en: "♪♪ Eighth", zh: "♪♪ 八分" },
+            subTriplet: { en: "♪♪♪ Triplet", zh: "♪♪♪ 三连音" },
+            subSixteenth: { en: "♬ 16th", zh: "♬ 十六分" },
             practiceLabel: { en: "Auto Tempo / Practice", zh: "自动速度/练习" },
             practiceMode: { en: "Mode", zh: "模式" },
             practiceModeTempo: { en: "Auto Tempo Increase/Decrease", zh: "自动速度递增/减" },
@@ -525,7 +727,13 @@
             sponsorBtn: { en: "Sponsor", zh: "请我喝杯咖啡" },
             sponsorTitle: { en: "Support the Developer", zh: "支持开发者" },
             sponsorDesc: { en: "If you find this metronome helpful, consider buying me a coffee!", zh: "如果这个节拍器对您有帮助，可以考虑请我喝杯咖啡！" },
-            keyboardShortcut: { en: "Space: Start/Stop, T: Tap, 1-3: Sound, Arrows: Tempo", zh: "空格:开始/暂停, T:打拍, 1-3:音色, 方向键:速度" }
+            keyboardShortcut: { en: "Space: Start/Stop, T: Tap, 1-4: Sound/Sub, Arrows: Tempo", zh: "空格:开始/暂停, T:打拍, 1-4:音色/细分, 方向键:速度" },
+            presetTitle: { en: "Setlist / Presets", zh: "曲目单/预设" },
+            saveBtn: { en: "Save", zh: "保存" },
+            presetNamePlaceholder: { en: "Song Name (e.g. Chopin Etude)", zh: "曲目名称 (如: 肖邦练习曲)" },
+            noPresets: { en: "No saved presets yet", zh: "暂无保存的预设" },
+            loadBtn: { en: "Load", zh: "读取" },
+            deleteConfirm: { en: "Delete this preset?", zh: "删除此预设？" },
         };
 
         const tempoNameMap = {
@@ -545,6 +753,7 @@
         const TAP_TIMEOUT = 2000;
         const ACCENT_STATES = ['accent', 'normal', 'mute'];
         const LOCAL_STORAGE_KEY = 'evanMetronomeSettings';
+        const PRESETS_STORAGE_KEY = 'evanMetronomePresets';
 
         // --- DOM Elements ---
         const dom = {
@@ -582,6 +791,21 @@
             langToggleButton: document.getElementById('langToggleBtn'),
             sponsorBtn: document.getElementById('sponsorBtn'),
             sponsorModal: document.getElementById('sponsorModal'),
+            // New elements for presets
+            presetToggleBtn: document.getElementById('presetToggle'),
+            presetModal: document.getElementById('presetModal'),
+            presetList: document.getElementById('presetList'),
+            newPresetName: document.getElementById('newPresetName'),
+            savePresetBtn: document.getElementById('savePresetBtn'),
+            closePresetBtn: document.querySelector('.close-preset-btn'),
+            // New elements
+            pendulumBall: document.getElementById('pendulumBall'),
+            beatDots: document.getElementById('beatDots'),
+            practiceTimer: document.getElementById('practiceTimer'),
+            practiceTimerText: document.getElementById('practiceTimerText'),
+            subdivisionToggle: document.getElementById('subdivisionToggle'),
+            subdivisionOptions: document.getElementById('subdivisionOptions'),
+            subdivisionOptionBtns: document.querySelectorAll('.subdivision-option'),
         };
 
         // --- Audio & Sound ---
@@ -607,6 +831,17 @@
         let lastTapTime = 0;
         let practiceInitialTempo = 80;
         let currentLang = 'zh'; // Default language
+        let subdivision = 1; // 1=none, 2=eighth, 3=triplet, 4=sixteenth
+        let presets = [];
+        
+        // Practice timer
+        let practiceStartTime = null;
+        let practiceTimerInterval = null;
+        
+        // Pendulum animation constants
+        const PENDULUM_LEFT_POSITION = 10;  // leftmost position (percentage)
+        const PENDULUM_RIGHT_POSITION = 90; // rightmost position (percentage)
+        const PENDULUM_CENTER_POSITION = 50; // center position (percentage)
 
         let practice = {
             isActive: false,
@@ -647,6 +882,15 @@
             } else {
                 dom.startStopText.textContent = translations.startBtn[currentLang];
             }
+            
+            // I18n for placeholders
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.dataset.i18nPlaceholder;
+                if (translations[key] && translations[key][lang]) {
+                    el.placeholder = translations[key][lang];
+                }
+            });
+            renderPresets();
 
             saveSettings();
         }
@@ -691,6 +935,9 @@
                 practiceInterval: parseInt(dom.practiceInterval.value, 10),
                 practicePlayMeasures: parseInt(dom.practicePlayMeasures.value, 10),
                 practiceMuteMeasures: parseInt(dom.practiceMuteMeasures.value, 10),
+                // New settings
+                subdivision: subdivision,
+                isSubdivisionVisible: dom.subdivisionToggle.checked,
             };
             try { localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(settings)); }
             catch (e) { console.error("Error saving settings:", e); }
@@ -724,11 +971,18 @@
             dom.practiceInterval.value = settings.practiceInterval || 8;
             dom.practicePlayMeasures.value = settings.practicePlayMeasures || 3;
             dom.practiceMuteMeasures.value = settings.practiceMuteMeasures || 1;
+            
+            // Load new settings
+            subdivision = settings.subdivision || 1;
+            changeSubdivision(subdivision, true);
+            dom.subdivisionToggle.checked = settings.isSubdivisionVisible || false;
+            setSubdivisionVisible(dom.subdivisionToggle.checked);
 
             updateAccentPatternUI(settings.accentPattern);
             setAccentPatternVisible(dom.accentPatternToggle.checked);
             setPracticeModeActive(dom.practiceModeToggle.checked);
             updatePracticeModeUI();
+            updateBeatDotsUI();
 
             if (masterGainNode) masterGainNode.gain.setValueAtTime(parseFloat(dom.volumeSlider.value), audioContext.currentTime);
             return true;
@@ -745,11 +999,19 @@
             } catch (e) { console.error("Web Audio API Error", e); }
         }
 
-        function playSound(time, beatType) {
+        function playSound(time, beatType, isSubdivisionClick = false) {
             if (!audioContext || !masterGainNode) return;
             const soundSet = soundTypes[currentSoundType];
             if (!soundSet[beatType]) return;
-            const { freq, gain, decay, type } = soundSet[beatType];
+            let { freq, gain, decay, type } = soundSet[beatType];
+            
+            // Subdivision clicks are quieter and higher pitched
+            if (isSubdivisionClick) {
+                freq = freq * 1.5;
+                gain = gain * 0.4;
+                decay = decay * 0.6;
+            }
+            
             const osc = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
             osc.connect(gainNode); gainNode.connect(masterGainNode);
@@ -758,6 +1020,29 @@
             gainNode.gain.setValueAtTime(gain, time);
             gainNode.gain.exponentialRampToValueAtTime(0.001, time + decay);
             osc.start(time); osc.stop(time + decay + 0.02);
+        }
+        
+        // Schedule subdivision sounds for a beat
+        function scheduleSubdivisions(beatTime, beatDuration, beatIndex) {
+            if (subdivision <= 1) return;
+            
+            const subDuration = beatDuration / subdivision;
+            for (let i = 1; i < subdivision; i++) {
+                const subTime = beatTime + (subDuration * i);
+                if (!practice.isCurrentlyMuted) {
+                    playSound(subTime, 'normal', true);
+                }
+                
+                // Visual feedback for subdivisions
+                const visualDelay = Math.max(0, (subTime - audioContext.currentTime - 0.01) * 1000);
+                const subIndex = i;
+                const capturedBeatIndex = beatIndex; // Capture beat index at schedule time
+                setTimeout(() => {
+                    if (isPlaying) {
+                        updateSubdivisionDotVisual(capturedBeatIndex, subIndex);
+                    }
+                }, visualDelay);
+            }
         }
 
         function scheduler() {
@@ -776,20 +1061,27 @@
                 if (!practice.isCurrentlyMuted && beatState !== 'mute') {
                     playSound(nextNoteTime, beatState === 'accent' ? 'accent' : 'normal');
                 }
+                
+                // Schedule subdivisions (pass 0-based beat index)
+                const beatDuration = 60.0 / tempo;
+                scheduleSubdivisions(nextNoteTime, beatDuration, currentBeatInMeasure - 1);
 
                 const visualDelay = Math.max(0, (nextNoteTime - audioContext.currentTime - 0.01) * 1000);
+                const beatNum = currentBeatInMeasure;
                 setTimeout(() => {
                     if (isPlaying) {
                         dom.visualBeat.classList.toggle('beat-muted', practice.isCurrentlyMuted);
                         dom.visualBeat.classList.toggle('beat-active', !practice.isCurrentlyMuted);
-                        dom.beatCount.textContent = currentBeatInMeasure;
+                        dom.beatCount.textContent = beatNum;
+                        updateBeatDotVisual(beatNum - 1);
+                        updatePendulum(beatNum);
                         if (!practice.isCurrentlyMuted) {
                             setTimeout(() => dom.visualBeat.classList.remove('beat-active'), 80);
                         }
                     }
                 }, visualDelay);
 
-                nextNoteTime += 60.0 / tempo;
+                nextNoteTime += beatDuration;
             }
             schedulerTimerID = setTimeout(scheduler, LOOKAHEAD_INTERVAL);
         }
@@ -856,6 +1148,7 @@
 
             isPlaying = true;
             currentBeatInMeasure = 0;
+            
             nextNoteTime = audioContext.currentTime + 0.1;
             scheduler();
             dom.startStopText.textContent = translations.stopBtn[currentLang];
@@ -863,6 +1156,10 @@
             dom.startStopButton.classList.add('active');
             dom.visualBeat.style.opacity = 1;
             dom.beatCount.textContent = '●';
+            
+            // Start practice timer
+            startPracticeTimer();
+            dom.practiceTimer.classList.add('active');
         }
 
         function stopMetronome() {
@@ -876,6 +1173,102 @@
             dom.startStopIcon.innerHTML = '▶';
             dom.startStopButton.classList.remove('active');
             dom.container.classList.remove('practice-mode-active');
+            
+            // Stop practice timer
+            stopPracticeTimer();
+            dom.practiceTimer.classList.remove('active');
+            
+            // Reset beat dots visual
+            resetBeatDotsVisual();
+            resetPendulum();
+        }
+        
+        // Practice Timer functions
+        function startPracticeTimer() {
+            practiceStartTime = Date.now();
+            updatePracticeTimerDisplay();
+            practiceTimerInterval = setInterval(updatePracticeTimerDisplay, 1000);
+        }
+        
+        function stopPracticeTimer() {
+            if (practiceTimerInterval) {
+                clearInterval(practiceTimerInterval);
+                practiceTimerInterval = null;
+            }
+        }
+        
+        function updatePracticeTimerDisplay() {
+            if (!practiceStartTime) return;
+            const elapsed = Math.floor((Date.now() - practiceStartTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            dom.practiceTimerText.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+        
+        // Beat dots visual functions
+        function updateBeatDotsUI() {
+            dom.beatDots.innerHTML = '';
+            for (let i = 0; i < beatsPerMeasure; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'beat-dot';
+                const state = accentPattern[i] || (i === 0 ? 'accent' : 'normal');
+                if (state === 'accent') dot.classList.add('accent');
+                if (state === 'mute') dot.classList.add('muted');
+                dom.beatDots.appendChild(dot);
+            }
+        }
+        
+        function updateBeatDotVisual(beatIndex) {
+            const dots = dom.beatDots.querySelectorAll('.beat-dot');
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === beatIndex);
+            });
+        }
+        
+        function updateSubdivisionDotVisual(beatIndex, subIndex) {
+            // Visual feedback for subdivisions - pulse effect on current beat dot
+            const dots = dom.beatDots.querySelectorAll('.beat-dot');
+            if (dots[beatIndex]) {
+                dots[beatIndex].style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    dots[beatIndex].style.transform = '';
+                }, 50);
+            }
+        }
+        
+        function resetBeatDotsVisual() {
+            const dots = dom.beatDots.querySelectorAll('.beat-dot');
+            dots.forEach(dot => dot.classList.remove('active'));
+        }
+        
+        // Pendulum animation functions
+        function updatePendulum(beatNum) {
+            // Swing pendulum left/right based on odd/even beats
+            const isOddBeat = beatNum % 2 === 1;
+            const targetPosition = isOddBeat ? PENDULUM_RIGHT_POSITION : PENDULUM_LEFT_POSITION;
+            dom.pendulumBall.style.left = targetPosition + '%';
+            dom.pendulumBall.classList.add('active');
+            setTimeout(() => {
+                dom.pendulumBall.classList.remove('active');
+            }, 100);
+        }
+        
+        function resetPendulum() {
+            dom.pendulumBall.style.left = PENDULUM_CENTER_POSITION + '%';
+            dom.pendulumBall.classList.remove('active');
+        }
+        
+        // Subdivision functions
+        function changeSubdivision(value, silent = false) {
+            subdivision = parseInt(value, 10) || 1;
+            dom.subdivisionOptionBtns.forEach(opt => {
+                opt.classList.toggle('active', parseInt(opt.dataset.subdivision, 10) === subdivision);
+            });
+            if (!silent) saveSettings();
+        }
+        
+        function setSubdivisionVisible(isVisible) {
+            dom.subdivisionOptions.classList.toggle('visible', isVisible);
         }
 
         function updateTempoUI(newTempo) {
@@ -937,10 +1330,12 @@
                     selector.dataset.state = nextState;
                     selector.textContent = nextState.charAt(0).toUpperCase();
                     if (audioContext?.state === 'running' && nextState !== 'mute') playSound(audioContext.currentTime, nextState === 'accent' ? 'accent' : 'normal');
+                    updateBeatDotsUI(); // Update beat dots when pattern changes
                     saveSettings();
                 });
                 dom.accentPatternContainer.appendChild(sel);
             }
+            updateBeatDotsUI(); // Update beat dots UI
             if (isPlaying) currentBeatInMeasure = 0;
         }
 
@@ -964,6 +1359,146 @@
             dom.muteMeasuresControls.classList.toggle('hidden', currentMode !== 'mute-measures');
         }
 
+        // --- Preset Manager Functions ---
+        function loadPresets() {
+            try {
+                const saved = localStorage.getItem(PRESETS_STORAGE_KEY);
+                if (saved) presets = JSON.parse(saved);
+            } catch (e) { console.error("Error parsing presets:", e); }
+            renderPresets();
+        }
+
+        function savePresetsToStorage() {
+             localStorage.setItem(PRESETS_STORAGE_KEY, JSON.stringify(presets));
+        }
+
+        function renderPresets() {
+            dom.presetList.innerHTML = '';
+            if (presets.length === 0) {
+                const emptyItem = document.createElement('li');
+                emptyItem.className = 'empty-presets';
+                emptyItem.textContent = translations.noPresets[currentLang];
+                dom.presetList.appendChild(emptyItem);
+                return;
+            }
+
+            presets.forEach((preset, index) => {
+                const li = document.createElement('li');
+                li.className = 'preset-item';
+                
+                const info = document.createElement('div');
+                info.className = 'preset-info';
+                info.onclick = () => applyPreset(index);
+                
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'preset-name';
+                nameDiv.textContent = preset.name;
+                
+                const detailsDiv = document.createElement('div');
+                detailsDiv.className = 'preset-details';
+                
+                const tempoTag = document.createElement('span');
+                tempoTag.className = 'preset-tag';
+                tempoTag.textContent = `${preset.tempo} BPM`;
+                
+                const timeSigTag = document.createElement('span');
+                timeSigTag.className = 'preset-tag';
+                timeSigTag.textContent = `${preset.timeSignature}/4`;
+                
+                detailsDiv.appendChild(tempoTag);
+                detailsDiv.appendChild(timeSigTag);
+                
+                if (preset.subdivision > 1) {
+                     const subTag = document.createElement('span');
+                     subTag.className = 'preset-tag';
+                     const subMap = {2: '♪♪', 3: '♪♪♪', 4: '♬'};
+                     subTag.textContent = subMap[preset.subdivision] || 'Sub';
+                     detailsDiv.appendChild(subTag);
+                }
+
+                info.appendChild(nameDiv);
+                info.appendChild(detailsDiv);
+
+                const actions = document.createElement('div');
+                actions.className = 'preset-actions';
+                
+                const loadBtn = document.createElement('button');
+                loadBtn.className = 'preset-btn primary-btn load-btn';
+                loadBtn.textContent = translations.loadBtn[currentLang];
+                loadBtn.onclick = (e) => { e.stopPropagation(); applyPreset(index); };
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.setAttribute('aria-label', 'Delete');
+                deleteBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>';
+                deleteBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    if(confirm(translations.deleteConfirm[currentLang])) {
+                        deletePreset(index);
+                    }
+                };
+
+                actions.appendChild(loadBtn);
+                actions.appendChild(deleteBtn);
+
+                li.appendChild(info);
+                li.appendChild(actions);
+                dom.presetList.appendChild(li);
+            });
+        }
+
+        function saveCurrentAsPreset() {
+            const name = dom.newPresetName.value.trim();
+            if (!name) return;
+            
+            const newPreset = {
+                id: Date.now(),
+                name: name,
+                tempo: tempo,
+                timeSignature: dom.timeSignature.value,
+                soundType: currentSoundType,
+                subdivision: subdivision,
+                accentPattern: [...accentPattern],
+                // Store minimal practice settings if active, optional
+                isPracticeModeActive: dom.practiceModeToggle.checked,
+                settingsTimestamp: new Date().toISOString()
+            };
+            
+            presets.unshift(newPreset); // Add to top
+            savePresetsToStorage();
+            renderPresets();
+            dom.newPresetName.value = '';
+        }
+
+        function deletePreset(index) {
+            presets.splice(index, 1);
+            savePresetsToStorage();
+            renderPresets();
+        }
+
+        function applyPreset(index) {
+            const preset = presets[index];
+            if (!preset) return;
+
+            setTempoValidated(preset.tempo);
+            dom.timeSignature.value = preset.timeSignature;
+            changeSoundType(preset.soundType, true);
+            changeSubdivision(preset.subdivision, true);
+            
+            // Handle accent pattern logic
+            if (preset.accentPattern && preset.accentPattern.length > 0) {
+                 updateAccentPatternUI(preset.accentPattern);
+            } else {
+                 updateAccentPatternUI();
+            }
+            
+            // Close modal after loading
+            dom.presetModal.style.display = "none";
+            
+            // Visual feedback could be added here
+            saveSettings();
+        }
+
         function initialize() {
             if (!loadSettings()) {
                 setLanguage('zh');
@@ -971,9 +1506,12 @@
                 changeSoundType('classic', true);
                 updateAccentPatternUI();
                 updatePracticeModeUI();
+                updateBeatDotsUI();
                 dom.volumeSlider.value = 0.7;
             }
+            loadPresets(); // Load presets
             dom.visualBeat.style.opacity = 0.5;
+            resetPendulum();
             
             // Event Listeners
             dom.langToggleButton.addEventListener('click', () => {
@@ -1008,14 +1546,17 @@
             const makeToggleable = (toggleId) => {
                 const toggle = document.getElementById(toggleId);
                 const label = document.querySelector(`label[for="${toggleId}"]`);
-                label.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    toggle.checked = !toggle.checked;
-                    toggle.dispatchEvent(new Event('change'));
-                });
+                if (label) {
+                    label.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        toggle.checked = !toggle.checked;
+                        toggle.dispatchEvent(new Event('change'));
+                    });
+                }
             };
             makeToggleable('accentPatternToggle');
             makeToggleable('practiceModeToggle');
+            makeToggleable('subdivisionToggle');
 
             dom.accentPatternToggle.addEventListener('change', () => { setAccentPatternVisible(dom.accentPatternToggle.checked); saveSettings(); });
             
@@ -1030,6 +1571,15 @@
             
             [dom.practiceStartTempo, dom.practiceEndTempo, dom.practiceIncrement, dom.practiceInterval, dom.practicePlayMeasures, dom.practiceMuteMeasures]
                 .forEach(input => input.addEventListener('change', saveSettings));
+            
+            // Subdivision event listeners
+            dom.subdivisionToggle.addEventListener('change', () => { 
+                setSubdivisionVisible(dom.subdivisionToggle.checked); 
+                saveSettings(); 
+            });
+            dom.subdivisionOptionBtns.forEach(opt => opt.addEventListener('click', () => {
+                changeSubdivision(opt.dataset.subdivision);
+            }));
 
             // Sponsor Modal Listeners
             const sponsorModal = document.getElementById('sponsorModal');
@@ -1043,21 +1593,53 @@
             closeBtn.addEventListener('click', () => {
                 sponsorModal.style.display = "none";
             });
+            
+            // Preset Modal Listeners
+            dom.presetToggleBtn.addEventListener('click', () => {
+                dom.presetModal.style.display = "block";
+                dom.newPresetName.focus();
+            });
+            
+            dom.closePresetBtn.addEventListener('click', () => {
+                dom.presetModal.style.display = "none";
+            });
+            
+            dom.savePresetBtn.addEventListener('click', saveCurrentAsPreset);
+            
+            // Allow Enter key to save preset
+            dom.newPresetName.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') saveCurrentAsPreset();
+            });
 
             window.addEventListener('click', (event) => {
                 if (event.target == sponsorModal) {
                     sponsorModal.style.display = "none";
                 }
+                if (event.target == dom.presetModal) {
+                     dom.presetModal.style.display = "none";
+                }
             });
 
             document.addEventListener('keydown', (e) => {
                 if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+                // If modals are open, maybe disable shortcuts or use them for modal nav?
+                // For now, let's just ignore shortcuts if modals are open to prevent accidental playback
+                if (sponsorModal.style.display === "block" || dom.presetModal.style.display === "block") return;
+                
                 const keyMap = {
                     'Space': () => isPlaying ? stopMetronome() : startMetronome(),
                     'KeyT': () => dom.tapButton.click(),
-                    'Digit1': () => changeSoundType('classic'), 'Digit2': () => changeSoundType('wood'), 'Digit3': () => changeSoundType('digital'),
-                    'ArrowUp': () => setTempoValidated(tempo + 1), 'ArrowRight': () => setTempoValidated(tempo + 1),
-                    'ArrowDown': () => setTempoValidated(tempo - 1), 'ArrowLeft': () => setTempoValidated(tempo - 1),
+                    'Digit1': () => changeSoundType('classic'), 
+                    'Digit2': () => changeSoundType('wood'), 
+                    'Digit3': () => changeSoundType('digital'),
+                    'Digit4': () => { // Cycle through subdivisions
+                        const nextSub = subdivision >= 4 ? 1 : subdivision + 1;
+                        changeSubdivision(nextSub);
+                    },
+                    'ArrowUp': () => setTempoValidated(tempo + 1), 
+                    'ArrowRight': () => setTempoValidated(tempo + 1),
+                    'ArrowDown': () => setTempoValidated(tempo - 1), 
+                    'ArrowLeft': () => setTempoValidated(tempo - 1),
                 };
                 if(keyMap[e.code]) { e.preventDefault(); keyMap[e.code](); }
             });
